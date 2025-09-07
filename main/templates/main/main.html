@@ -1,0 +1,378 @@
+{% extends "main/base.html" %}
+{%load static%}
+
+{% block extra_css %}
+<style>
+        .hero-section {
+            height: 100vh;
+            background: linear-gradient(45deg, var(--primary-black) 0%, var(--dark-gray) 100%);
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 5rem;
+            font-weight: 800;
+            color: var(--primary-white);
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            line-height: 0.9;
+            margin-bottom: 2rem;
+            animation: slideInLeft 1s ease-out;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: var(--primary-white);
+            margin-bottom: 3rem;
+            animation: slideInRight 1s ease-out 0.3s both;
+        }
+
+        .btn-vintage {
+            background-color: var(--primary-white);
+            color: var(--primary-black);
+            border: none;
+            padding: 15px 40px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .btn-vintage:hover {
+            background-color: var(--primary-black);
+            color: var(--primary-white);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background-color: var(--primary-black);
+        }
+
+        .product-card {
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+
+        .product-image {
+            height: 300px;
+            background-color: var(--light-gray);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(0,0,0,0.8), rgba(0,0,0,0.4));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover .product-overlay {
+            opacity: 1;
+        }
+
+        .product-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin: 1rem 0 0.5rem 0;
+            text-transform: uppercase;
+        }
+
+        .product-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-black);
+        }
+
+        .about-section {
+            background-color: var(--primary-black);
+            color: var(--primary-white);
+            padding: 100px 0;
+        }
+
+        .about-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .stats-section {
+            background-color: var(--light-gray);
+            padding: 80px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary-black);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--medium-gray);
+        }
+
+        .footer {
+            background-color: var(--primary-black);
+            color: var(--primary-white);
+            padding: 50px 0;
+        }
+
+        .footer-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .footer-link {
+            color: var(--primary-white);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 300;
+        }
+
+        .footer-link:hover {
+            color: var(--medium-gray);
+        }
+
+        .social-icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-3px);
+            color: var(--medium-gray);
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+{% endblock %}
+{%block content%}
+ <section id="home" class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <h1 class="hero-title">BlockWear<br></h1>
+                        <p class="hero-subtitle">Уникальная винтажная одежда для истинных ценителей стиля</p>
+                        <button class="btn btn-vintage btn-lg">Смотреть каталог</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+ </section>
+
+    <!-- Products Section -->
+<section id="catalog" class="py-5">
+        <div class="container">
+            <h2 class="section-title text-center">Популярные товары</h2>
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="card product-card">
+                        <div class="product-image">
+                            <div class="product-overlay">
+                                <button class="btn btn-vintage">Подробнее</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="product-title">Винтажная куртка 70-х</h5>
+                            <p class="product-price">12 500 ₽</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card product-card">
+                        <div class="product-image">
+                            <div class="product-overlay">
+                                <button class="btn btn-vintage">Подробнее</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="product-title">Ретро платье 60-х</h5>
+                            <p class="product-price">8 900 ₽</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card product-card">
+                        <div class="product-image">
+                            <div class="product-overlay">
+                                <button class="btn btn-vintage">Подробнее</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="product-title">Классические джинсы</h5>
+                            <p class="product-price">6 700 ₽</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="section-title" style="color: white;">О BlockWear</h2>
+                    <p class="about-text">
+                        Мы специализируемся на поиске и продаже аутентичной винтажной одежды.
+                        Каждая вещь в нашей коллекции тщательно отобрана и имеет свою уникальную историю.
+                    </p>
+                    <p class="about-text">
+                        Наша миссия — сохранить историю моды и дать вторую жизнь
+                        качественным вещам прошлых десятилетий.
+                    </p>
+                </div>
+                <div class="col-lg-6">
+                    <div class="stats-section" style="background: transparent; padding: 0;">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="stat-item">
+                                    <span class="stat-number" style="color: white;">500+</span>
+                                    <span class="stat-label" style="color: #ccc;">Товаров</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-item">
+                                    <span class="stat-number" style="color: white;">1000+</span>
+                                    <span class="stat-label" style="color: #ccc;">Клиентов</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-item">
+                                    <span class="stat-number" style="color: white;">50+</span>
+                                    <span class="stat-label" style="color: #ccc;">Лет истории</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-item">
+                                    <span class="stat-number" style="color: white;">15</span>
+                                    <span class="stat-label" style="color: #ccc;">Стран</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Поддержка</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Качество</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">48ч</span>
+                        <span class="stat-label">Доставка</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">3 года</span>
+                        <span class="stat-label">Гарантия</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{%endblock%}

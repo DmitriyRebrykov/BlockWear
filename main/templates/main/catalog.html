@@ -1,0 +1,900 @@
+{% extends "main/base.html" %}
+{%load static%}
+
+{% block extra_css %}
+<style>
+.navbar-brand {
+            font-weight: 800;
+            font-size: 2rem;
+            letter-spacing: -1px;
+            color: var(--primary-black) !important;
+            text-transform: uppercase;
+        }
+
+        .navbar {
+            background-color: var(--primary-white) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-link {
+            color: var(--primary-black) !important;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--medium-gray) !important;
+            transform: translateY(-2px);
+        }
+
+        .catalog-header {
+            background: linear-gradient(135deg, var(--primary-black) 0%, var(--dark-gray) 100%);
+            padding: 120px 0 80px;
+            color: var(--primary-white);
+        }
+
+        .catalog-title {
+            font-size: 4rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            margin-bottom: 1rem;
+        }
+
+        .catalog-subtitle {
+            font-size: 1.2rem;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        .filters-sidebar {
+            background-color: var(--light-gray);
+            border-radius: 15px;
+            padding: 2rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .filter-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            color: var(--primary-black);
+        }
+
+        .filter-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-check-label {
+            font-weight: 400;
+            color: var(--primary-black);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-black);
+            border-color: var(--primary-black);
+        }
+
+        .form-check-label:hover {
+            color: var(--medium-gray);
+        }
+
+        .price-range {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .btn-clear-filters {
+            background-color: var(--primary-black);
+            color: var(--primary-white);
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        .btn-clear-filters:hover {
+            background-color: var(--medium-gray);
+            color: var(--primary-white);
+        }
+
+        .products-section {
+            padding: 3rem 0;
+        }
+
+        .sort-controls {
+            margin-bottom: 2rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        .sort-select {
+            border: 1px solid var(--border-gray);
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-weight: 500;
+            background-color: var(--primary-white);
+        }
+
+        .results-count {
+            font-weight: 500;
+            color: var(--medium-gray);
+        }
+
+        .product-card {
+            border: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.4s ease;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            border-radius: 15px;
+            background-color: var(--primary-white);
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .product-image {
+            height: 350px;
+            background: linear-gradient(45deg, #f0f0f0, #e8e8e8);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--medium-gray);
+        }
+
+        .product-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(0,0,0,0.8), rgba(0,0,0,0.4));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .product-card:hover .product-overlay {
+            opacity: 1;
+        }
+
+        .btn-product {
+            background-color: var(--primary-white);
+            color: var(--primary-black);
+            border: none;
+            padding: 10px 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border-radius: 25px;
+            font-size: 0.9rem;
+        }
+
+        .btn-product:hover {
+            background-color: var(--primary-black);
+            color: var(--primary-white);
+            transform: scale(1.05);
+        }
+
+        .btn-wishlist {
+            background-color: transparent;
+            color: var(--primary-white);
+            border: 2px solid var(--primary-white);
+            padding: 8px 12px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .btn-wishlist:hover {
+            background-color: var(--primary-white);
+            color: var(--primary-black);
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-category {
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--medium-gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-black);
+            line-height: 1.4;
+        }
+
+        .product-description {
+            font-size: 0.9rem;
+            color: var(--medium-gray);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .product-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-black);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-original-price {
+            font-size: 1rem;
+            color: var(--medium-gray);
+            text-decoration: line-through;
+            margin-left: 0.5rem;
+        }
+
+        .product-tags {
+            margin-top: 1rem;
+        }
+
+        .product-tag {
+            display: inline-block;
+            background-color: var(--light-gray);
+            color: var(--primary-black);
+            font-size: 0.7rem;
+            font-weight: 500;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pagination-container {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .page-link {
+            color: var(--primary-black);
+            border-color: var(--border-gray);
+            font-weight: 500;
+        }
+
+        .page-link:hover {
+            color: var(--primary-white);
+            background-color: var(--primary-black);
+            border-color: var(--primary-black);
+        }
+
+        .page-item.active .page-link {
+            background-color: var(--primary-black);
+            border-color: var(--primary-black);
+        }
+
+        .mobile-filter-btn {
+            display: none;
+        }
+
+        @media (max-width: 991px) {
+            .catalog-title {
+                font-size: 3rem;
+            }
+
+            .filters-sidebar {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background-color: var(--primary-white);
+                z-index: 1050;
+                overflow-y: auto;
+                padding: 2rem;
+            }
+
+            .filters-sidebar.show {
+                display: block;
+            }
+
+            .mobile-filter-btn {
+                display: inline-block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .catalog-title {
+                font-size: 2.5rem;
+            }
+
+            .product-image {
+                height: 250px;
+            }
+        }
+
+        .sale-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: var(--primary-black);
+            color: var(--primary-white);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .new-badge {
+            background-color: var(--medium-gray);
+        }
+    </style>
+{% endblock %}
+
+{%block content%}
+
+
+    <!-- Main Content -->
+    <section class="products-section">
+        <div class="container">
+            <div class="row">
+                <!-- Filters Sidebar -->
+                <div class="col-lg-3">
+                    <div class="filters-sidebar" id="filtersSidebar">
+                        <div class="d-flex justify-content-between align-items-center mb-3 d-lg-none">
+                            <h5 class="filter-title mb-0">Filters</h5>
+                            <button type="button" class="btn-close" onclick="toggleFilters()"></button>
+                        </div>
+
+                        <!-- Category Filter -->
+                        <div class="filter-group">
+                            <h6 class="filter-title">Category</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="jackets" id="jackets" checked>
+                                <label class="form-check-label" for="jackets">Jackets (24)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="dresses" id="dresses">
+                                <label class="form-check-label" for="dresses">Dresses (18)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="jeans" id="jeans">
+                                <label class="form-check-label" for="jeans">Jeans (32)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="shirts" id="shirts">
+                                <label class="form-check-label" for="shirts">Shirts (15)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="accessories" id="accessories">
+                                <label class="form-check-label" for="accessories">Accessories (27)</label>
+                            </div>
+                        </div>
+
+                        <!-- Era Filter -->
+                        <div class="filter-group">
+                            <h6 class="filter-title">Era</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="1960s" id="1960s">
+                                <label class="form-check-label" for="1960s">1960s (12)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="1970s" id="1970s" checked>
+                                <label class="form-check-label" for="1970s">1970s (23)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="1980s" id="1980s">
+                                <label class="form-check-label" for="1980s">1980s (31)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="1990s" id="1990s">
+                                <label class="form-check-label" for="1990s">1990s (19)</label>
+                            </div>
+                        </div>
+
+                        <!-- Size Filter -->
+                        <div class="filter-group">
+                            <h6 class="filter-title">Size</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="xs" id="xs">
+                                <label class="form-check-label" for="xs">XS (8)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="s" id="s">
+                                <label class="form-check-label" for="s">S (15)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="m" id="m">
+                                <label class="form-check-label" for="m">M (24)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="l" id="l">
+                                <label class="form-check-label" for="l">L (18)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="xl" id="xl">
+                                <label class="form-check-label" for="xl">XL (12)</label>
+                            </div>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="filter-group">
+                            <h6 class="filter-title">Price Range</h6>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="small">$50</span>
+                                <span class="small">$500</span>
+                            </div>
+                            <input type="range" class="form-range price-range" min="50" max="500" value="250" id="priceRange">
+                            <div class="text-center mt-2">
+                                <span class="small">Up to $<span id="priceValue">250</span></span>
+                            </div>
+                        </div>
+
+                        <!-- Condition Filter -->
+                        <div class="filter-group">
+                            <h6 class="filter-title">Condition</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="excellent" id="excellent">
+                                <label class="form-check-label" for="excellent">Excellent (45)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="good" id="good">
+                                <label class="form-check-label" for="good">Good (32)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="fair" id="fair">
+                                <label class="form-check-label" for="fair">Fair (8)</label>
+                            </div>
+                        </div>
+
+                        <button class="btn-clear-filters" onclick="clearFilters()">Clear All Filters</button>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="col-lg-9">
+                    <!-- Sort Controls -->
+                    <div class="sort-controls d-flex justify-content-between align-items-center">
+                        <div>
+                            <button class="btn btn-outline-dark mobile-filter-btn" onclick="toggleFilters()">
+                                <i class="fas fa-filter me-2"></i>Filters
+                            </button>
+                            <span class="results-count ms-3">Showing 24 of 116 products</span>
+                        </div>
+                        <div>
+                            <select class="sort-select" onchange="sortProducts(this.value)">
+                                <option value="featured">Featured</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Era: Oldest First</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="row" id="productsGrid">
+                        <!-- Product Card 1 -->
+                        <div class="col-lg-4 col-md-6" data-category="jackets" data-era="1970s" data-price="185">
+                            <div class="card product-card">
+                                <div class="product-image">
+                                    <div class="sale-badge">Sale</div>
+                                    <i class="fas fa-tshirt"></i>
+                                    <div class="product-overlay">
+                                        <button class="btn btn-product">Quick View</button>
+                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
+                                    </div>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-category">Vintage Jackets</div>
+                                    <h5 class="product-title">70s Leather Bomber Jacket</h5>
+                                    <p class="product-description">Authentic vintage bomber jacket from the 70s. Perfect condition with original details.</p>
+                                    <div class="product-price">
+                                        $185
+                                        <span class="product-original-price">$245</span>
+                                    </div>
+                                    <div class="product-tags">
+                                        <span class="product-tag">Leather</span>
+                                        <span class="product-tag">Size M</span>
+                                        <span class="product-tag">1970s</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Card 2 -->
+                        <div class="col-lg-4 col-md-6" data-category="dresses" data-era="1960s" data-price="125">
+                            <div class="card product-card">
+                                <div class="product-image">
+                                    <i class="fas fa-female"></i>
+                                    <div class="product-overlay">
+                                        <button class="btn btn-product">Quick View</button>
+                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
+                                    </div>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-category">Vintage Dresses</div>
+                                    <h5 class="product-title">60s Mod Mini Dress</h5>
+                                    <p class="product-description">Classic mod style mini dress with geometric patterns. True 60s fashion statement.</p>
+                                    <div class="product-price">$125</div>
+                                    <div class="product-tags">
+                                        <span class="product-tag">Cotton</span>
+                                        <span class="product-tag">Size S</span>
+                                        <span class="product-tag">1960s</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Card 3 -->
+                        <div class="col-lg-4 col-md-6" data-category="jeans" data-era="1980s" data-price="95">
+                            <div class="card product-card">
+                                <div class="product-image">
+                                    <div class="sale-badge new-badge">New</div>
+                                    <i class="fas fa-tshirt"></i>
+                                    <div class="product-overlay">
+                                        <button class="btn btn-product">Quick View</button>
+                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
+                                    </div>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-category">Vintage Jeans</div>
+                                    <h5 class="product-title">80s High-Waisted Jeans</h5>
+                                    <p class="product-description">Original Levi's high-waisted jeans from the 80s. Excellent vintage condition.</p>
+                                    <div class="product-price">$95</div>
+                                    <div class="product-tags">
+                                        <span class="product-tag">Denim</span>
+                                        <span class="product-tag">Size L</span>
+                                        <span class="product-tag">1980s</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Card 4 -->
+                        <div class="col-lg-4 col-md-6" data-category="shirts" data-era="1970s" data-price="75">
+                            <div class="card product-card">
+                                <div class="product-image">
+                                    <i class="fas fa-tshirt"></i>
+                                    <div class="product-overlay">
+                                        <button class="btn btn-product">Quick View</button>
+                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
+                                    </div>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-category">Vintage Shirts</div>
+                                    <h5 class="product-title">70s Psychedelic Print Shirt</h5>
+                                    <p class="product-description">Groovy psychedelic print shirt from the flower power era. Vibrant colors and patterns.</p>
+                                    <div class="product-price">$75</div>
+                                    <div class="product-tags">
+                                        <span class="product-tag">Cotton</span>
+                                        <span class="product-tag">Size M</span>
+                                        <span class="product-tag">1970s</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Card 5 -->
+                        <div class="col-lg-4 col-md-6" data-category="accessories" data-era="1980s" data-price="45">
+                            <div class="card product-card">
+                                <div class="product-image">
+                                    <i class="fas fa-glasses"></i>
+                                    <div class="product-overlay">
+                                        <button class="btn btn-product">Quick View</button>
+                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
+                                    </div>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-category">Vintage Accessories</div>
+                                    <h5 class="product-title">80s Oversized Sunglasses</h5>
+                                    <p class="product-description">Classic 80s oversized sunglasses with UV protection. Perfect vintage statement piece.</p>
+                                    <div class="product-price">$45</div>
+                                    <div class="product-tags">
+                                        <span class="product-tag">Sunglasses</span>
+                                        <span class="product-tag">Unisex</span>
+                                        <span class="product-tag">1980s</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Card 6 -->
+                        <div class="col-lg-4 col-md-6" data-category="jackets" data-era="1990s" data-price="165">
+                            <div class="card product-card">
+                                <div class="product-image">
+                                    <i class="fas fa-tshirt"></i>
+                                    <div class="product-overlay">
+                                        <button class="btn btn-product">Quick View</button>
+                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
+                                    </div>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-category">Vintage Jackets</div>
+                                    <h5 class="product-title">90s Windbreaker Jacket</h5>
+                                    <p class="product-description">Colorful 90s windbreaker with retro color blocking. Perfect for the nostalgic look.</p>
+                                    <div class="product-price">$165</div>
+                                    <div class="product-tags">
+                                        <span class="product-tag">Nylon</span>
+                                        <span class="product-tag">Size L</span>
+                                        <span class="product-tag">1990s</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Card 7 -->
+                        <div class="col-lg-4 col-md-6" data-category="dresses" data-era="1970s" data-price="145">
+                            <div class="card product-card">
+                                <div class="product-image">
+                                    <div class="sale-badge">Sale</div>
+                                    <i class="fas fa-female"></i>
+                                    <div class="product-overlay">
+                                        <button class="btn btn-product">Quick View</button>
+                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
+                                    </div>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-category">Vintage Dresses</div>
+                                    <h5 class="product-title">70s Bohemian Maxi Dress</h5>
+                                    <p class="product-description">Flowing bohemian maxi dress with floral print. Epitomizes 70s hippie chic style.</p>
+                                    <div class="product-price">
+                                        $145
+                                        <span class="product-original-price">$185</span>
+                                    </div>
+                                    <div class="product-tags">
+                                        <span class="product-tag">Cotton</span>
+                                        <span class="product-tag">Size M</span>
+                                        <span class="product-tag">1970s</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Card 8 -->
+                        <div class="col-lg-4 col-md-6" data-category="jeans" data-era="1990s" data-price="85">
+                            <div class="card product-card">
+                                <div class="product-image">
+                                    <i class="fas fa-tshirt"></i>
+                                    <div class="product-overlay">
+                                        <button class="btn btn-product">Quick View</button>
+                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
+                                    </div>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-category">Vintage Jeans</div>
+                                    <h5 class="product-title">90s Baggy Jeans</h5>
+                                    <p class="product-description">Authentic 90s baggy jeans with distressed details. Perfect for that grunge aesthetic.</p>
+                                    <div class="product-price">$85</div>
+                                    <div class="product-tags">
+                                        <span class="product-tag">Denim</span>
+                                        <span class="product-tag">Size XL</span>
+                                        <span class="product-tag">1990s</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Card 9 -->
+                        <div class="col-lg-4 col-md-6" data-category="accessories" data-era="1960s" data-price="35">
+                            <div class="card product-card">
+                                <div class="product-image">
+                                    <div class="sale-badge new-badge">New</div>
+                                    <i class="fas fa-hat-cowboy"></i>
+                                    <div class="product-overlay">
+                                        <button class="btn btn-product">Quick View</button>
+                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
+                                    </div>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-category">Vintage Accessories</div>
+                                    <h5 class="product-title">60s Mod Pillbox Hat</h5>
+                                    <p class="product-description">Classic 60s pillbox hat in excellent condition. Perfect for completing your mod look.</p>
+                                    <div class="product-price">$35</div>
+                                    <div class="product-tags">
+                                        <span class="product-tag">Wool</span>
+                                        <span class="product-tag">One Size</span>
+                                        <span class="product-tag">1960s</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination-container">
+                        <nav aria-label="Product pagination">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                </li>
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">1</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">2</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">3</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">4</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">5</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <p class="text-center mt-3 text-muted">
+                            <small>Showing 1-9 of 116 products</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<script>
+        // Price range slider
+        const priceRange = document.getElementById('priceRange');
+        const priceValue = document.getElementById('priceValue');
+
+        priceRange.addEventListener('input', function() {
+            priceValue.textContent = this.value;
+        });
+
+        // Mobile filter toggle
+        function toggleFilters() {
+            const filtersSidebar = document.getElementById('filtersSidebar');
+            filtersSidebar.classList.toggle('show');
+        }
+
+        // Clear all filters
+        function clearFilters() {
+            const checkboxes = document.querySelectorAll('.form-check-input');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            priceRange.value = 250;
+            priceValue.textContent = '250';
+            filterProducts();
+        }
+
+        // Sort products
+        function sortProducts(sortBy) {
+            const productsGrid = document.getElementById('productsGrid');
+            const products = Array.from(productsGrid.children);
+
+            products.sort((a, b) => {
+                switch(sortBy) {
+                    case 'price-low':
+                        return parseInt(a.dataset.price) - parseInt(b.dataset.price);
+                    case 'price-high':
+                        return parseInt(b.dataset.price) - parseInt(a.dataset.price);
+                    case 'newest':
+                        return b.dataset.era.localeCompare(a.dataset.era);
+                    case 'oldest':
+                        return a.dataset.era.localeCompare(b.dataset.era);
+                    default:
+                        return 0;
+                }
+            });
+
+            // Clear and re-append sorted products
+            productsGrid.innerHTML = '';
+            products.forEach(product => productsGrid.appendChild(product));
+        }
+
+        // Filter products based on selected filters
+        function filterProducts() {
+            const products = document.querySelectorAll('[data-category]');
+            const checkedCategories = Array.from(document.querySelectorAll('input[value]:checked')).map(cb => cb.value);
+            const maxPrice = parseInt(priceRange.value);
+
+            products.forEach(product => {
+                const productCategory = product.dataset.category;
+                const productEra = product.dataset.era;
+                const productPrice = parseInt(product.dataset.price);
+
+                const categoryMatch = checkedCategories.length === 0 || checkedCategories.includes(productCategory) || checkedCategories.includes(productEra);
+                const priceMatch = productPrice <= maxPrice;
+
+                if (categoryMatch && priceMatch) {
+                    product.style.display = 'block';
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+
+            updateResultsCount();
+        }
+
+        // Update results count
+        function updateResultsCount() {
+            const visibleProducts = document.querySelectorAll('[data-category][style="display: block"], [data-category]:not([style*="display: none"])');
+            const resultsCount = document.querySelector('.results-count');
+            resultsCount.textContent = `Showing ${visibleProducts.length} of 116 products`;
+        }
+
+        // Add event listeners to all filter checkboxes
+        document.querySelectorAll('.form-check-input').forEach(checkbox => {
+            checkbox.addEventListener('change', filterProducts);
+        });
+
+        // Add event listener to price range
+        priceRange.addEventListener('input', filterProducts);
+
+        // Wishlist functionality
+        document.querySelectorAll('.btn-wishlist').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    this.style.backgroundColor = 'var(--primary-white)';
+                    this.style.color = '#ff4757';
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    this.style.backgroundColor = 'transparent';
+                    this.style.color = 'var(--primary-white)';
+                }
+            });
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Close mobile filters when clicking outside
+        document.addEventListener('click', function(event) {
+            const filtersSidebar = document.getElementById('filtersSidebar');
+            const mobileFilterBtn = document.querySelector('.mobile-filter-btn');
+
+            if (!filtersSidebar.contains(event.target) && !mobileFilterBtn.contains(event.target)) {
+                filtersSidebar.classList.remove('show');
+            }
+        });
+
+        // Initial filter application
+        filterProducts();
+    </script>
+{%endblock%}

@@ -1,0 +1,12 @@
+venv/
+.pylintrc
+__pycache__/
+
+.idea
+.env
+
+.flake8
+db.sqllite3
+media/
+products/
+fixtures/
