@@ -358,9 +358,6 @@
 {% endblock %}
 
 {%block content%}
-
-
-    <!-- Main Content -->
     <section class="products-section">
         <div class="container">
             <div class="row">
@@ -375,26 +372,12 @@
                         <!-- Category Filter -->
                         <div class="filter-group">
                             <h6 class="filter-title">Category</h6>
+                            {%for category in categories%}
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" value="jackets" id="jackets" checked>
-                                <label class="form-check-label" for="jackets">Jackets (24)</label>
+                                <label class="form-check-label" for="jackets">{{category.name}} (24)</label>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="dresses" id="dresses">
-                                <label class="form-check-label" for="dresses">Dresses (18)</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="jeans" id="jeans">
-                                <label class="form-check-label" for="jeans">Jeans (32)</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="shirts" id="shirts">
-                                <label class="form-check-label" for="shirts">Shirts (15)</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="accessories" id="accessories">
-                                <label class="form-check-label" for="accessories">Accessories (27)</label>
-                            </div>
+                            {%endfor%}
                         </div>
 
                         <!-- Era Filter -->
@@ -421,26 +404,12 @@
                         <!-- Size Filter -->
                         <div class="filter-group">
                             <h6 class="filter-title">Size</h6>
+                            {%for size in sizes%}
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" value="xs" id="xs">
-                                <label class="form-check-label" for="xs">XS (8)</label>
+                                <label class="form-check-label" for="xs">{{size.name}} (8)</label>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="s" id="s">
-                                <label class="form-check-label" for="s">S (15)</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="m" id="m">
-                                <label class="form-check-label" for="m">M (24)</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="l" id="l">
-                                <label class="form-check-label" for="l">L (18)</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="xl" id="xl">
-                                <label class="form-check-label" for="xl">XL (12)</label>
-                            </div>
+                            {%endfor%}
                         </div>
 
                         <!-- Price Range -->

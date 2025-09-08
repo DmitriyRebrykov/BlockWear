@@ -1,0 +1,971 @@
+{% extends "main/base.html" %}
+{%load static%}
+
+{% block extra_css %}
+<style>
+.navbar-brand {
+            font-weight: 800;
+            font-size: 2rem;
+            letter-spacing: -1px;
+            color: var(--primary-black) !important;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .navbar {
+            background-color: var(--primary-white) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-link {
+            color: var(--primary-black) !important;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-link:hover {
+            color: var(--medium-gray) !important;
+            transform: translateY(-2px);
+        }
+
+        /* Breadcrumb */
+        .breadcrumb-container {
+            background-color: var(--light-gray);
+            padding: 1rem 0;
+        }
+
+        .breadcrumb {
+            background: transparent;
+            margin: 0;
+            padding: 0;
+        }
+
+        .breadcrumb-item {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb-item a {
+            color: var(--medium-gray);
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: var(--primary-black);
+        }
+
+        /* Product Section */
+        .product-section {
+            padding: 3rem 0;
+        }
+
+        /* Image Gallery */
+        .product-gallery {
+            position: sticky;
+            top: 100px;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(45deg, #f0f0f0, #e8e8e8);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--medium-gray);
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+            cursor: zoom-in;
+        }
+
+        .image-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: var(--primary-black);
+            color: var(--primary-white);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .image-badge.sale {
+            background-color: var(--danger-red);
+        }
+
+        .thumbnail-images {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #f0f0f0, #e8e8e8);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--medium-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            flex-shrink: 0;
+        }
+
+        .thumbnail.active {
+            border-color: var(--primary-black);
+        }
+
+        .thumbnail:hover {
+            transform: scale(1.05);
+        }
+
+        /* Product Info */
+        .product-category {
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--medium-gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stars {
+            color: var(--warning-orange);
+        }
+
+        .rating-text {
+            color: var(--medium-gray);
+            font-weight: 500;
+        }
+
+        .product-price {
+            margin-bottom: 1.5rem;
+        }
+
+        .current-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-black);
+        }
+
+        .original-price {
+            font-size: 1.2rem;
+            color: var(--medium-gray);
+            text-decoration: line-through;
+            margin-left: 0.5rem;
+        }
+
+        .discount-badge {
+            background-color: var(--danger-red);
+            color: var(--primary-white);
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .stock-info {
+            margin-bottom: 1.5rem;
+        }
+
+        .in-stock {
+            color: var(--success-green);
+            font-weight: 600;
+        }
+
+        .low-stock {
+            color: var(--warning-orange);
+            font-weight: 600;
+        }
+
+        .out-stock {
+            color: var(--danger-red);
+            font-weight: 600;
+        }
+
+        /* Product Options */
+        .product-options {
+            margin-bottom: 2rem;
+        }
+
+        .option-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .option-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .size-options, .color-options {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .size-option, .color-option {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            background-color: var(--primary-white);
+        }
+
+        .size-option.active, .color-option.active {
+            border-color: var(--primary-black);
+            background-color: var(--primary-black);
+            color: var(--primary-white);
+        }
+
+        .size-option:hover, .color-option:hover {
+            border-color: var(--primary-black);
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .color-option.brown { background-color: #8B4513; }
+        .color-option.black { background-color: #000000; }
+        .color-option.navy { background-color: #1e3a8a; }
+
+        .color-option::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-white);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .color-option.active::after {
+            opacity: 1;
+        }
+
+        /* Quantity and Actions */
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .quantity-label {
+            font-weight: 600;
+            color: var(--primary-black);
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .quantity-btn {
+            background-color: var(--primary-white);
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .quantity-btn:hover {
+            background-color: var(--light-gray);
+        }
+
+        .quantity-input {
+            border: none;
+            text-align: center;
+            width: 60px;
+            padding: 0.5rem;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn-add-cart {
+            background-color: var(--primary-black);
+            color: var(--primary-white);
+            border: none;
+            padding: 15px 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .btn-add-cart:hover {
+            background-color: var(--dark-gray);
+            color: var(--primary-white);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .btn-wishlist {
+            background: none;
+            color: var(--primary-black);
+            border: 2px solid var(--primary-black);
+            padding: 15px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-wishlist:hover, .btn-wishlist.active {
+            background-color: var(--primary-black);
+            color: var(--primary-white);
+        }
+
+        /* Product Details Tabs */
+        .product-details {
+            margin-top: 3rem;
+        }
+
+        .nav-tabs {
+            border-bottom: 2px solid var(--border-gray);
+            margin-bottom: 2rem;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: var(--medium-gray);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary-black);
+            background: none;
+            border-bottom-color: var(--primary-black);
+        }
+
+        .tab-pane {
+            padding: 2rem 0;
+        }
+
+        .composition-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .composition-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-gray);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .composition-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* Reviews */
+        .review-item {
+            border-bottom: 1px solid var(--border-gray);
+            padding: 2rem 0;
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .reviewer-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-black);
+            color: var(--primary-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .reviewer-info h6 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .review-date {
+            color: var(--medium-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Recommended Products */
+        .recommended-section {
+            background-color: var(--light-gray);
+            padding: 4rem 0;
+            margin-top: 4rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .product-card {
+            background-color: var(--primary-white);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .product-card-image {
+            height: 250px;
+            background: linear-gradient(45deg, #f0f0f0, #e8e8e8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--medium-gray);
+            position: relative;
+        }
+
+        .product-card-body {
+            padding: 1.5rem;
+        }
+
+        .product-card-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-card-price {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* Delivery Info */
+        .delivery-info {
+            background-color: var(--light-gray);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .delivery-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .delivery-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .delivery-icon {
+            color: var(--success-green);
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .product-title {
+                font-size: 2rem;
+            }
+
+            .main-image {
+                height: 350px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .quantity-controls {
+                justify-content: center;
+            }
+        }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+<section class="product-section">
+        <div class="container">
+            <div class="row">
+                <!-- Product Images -->
+                <div class="col-lg-6">
+                    <div class="product-gallery">
+                        <div class="main-image" id="mainImage">
+                            <div class="image-badge sale">Sale</div>
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+
+                        <div class="thumbnail-images">
+                            <div class="thumbnail active" onclick="changeMainImage(this)">
+                                <i class="fas fa-tshirt"></i>
+                            </div>
+                            <div class="thumbnail" onclick="changeMainImage(this)">
+                                <i class="fas fa-tag"></i>
+                            </div>
+                            <div class="thumbnail" onclick="changeMainImage(this)">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="thumbnail" onclick="changeMainImage(this)">
+                                <i class="fas fa-ruler"></i>
+                            </div>
+                            <div class="thumbnail" onclick="changeMainImage(this)">
+                                <i class="fas fa-hand-paper"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="col-lg-6">
+                    <div class="product-category">Vintage Jackets</div>
+                    <h1 class="product-title">70s Leather Bomber Jacket</h1>
+
+                    <div class="product-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span class="rating-text">4.5 (24 reviews)</span>
+                    </div>
+
+                    <div class="product-price">
+                        <span class="current-price">$185.00</span>
+                        <span class="original-price">$245.00</span>
+                        <span class="discount-badge">-24%</span>
+                    </div>
+
+                    <div class="stock-info">
+                        <i class="fas fa-check-circle in-stock"></i>
+                        <span class="in-stock">In Stock (3 items remaining)</span>
+                    </div>
+
+                    <!-- Product Options -->
+                    <div class="product-options">
+                        <div class="option-group">
+                            <div class="option-title">Size:</div>
+                            <div class="size-options">
+                                <div class="size-option" onclick="selectOption(this, 'size')">XS</div>
+                                <div class="size-option active" onclick="selectOption(this, 'size')">S</div>
+                                <div class="size-option" onclick="selectOption(this, 'size')">M</div>
+                                <div class="size-option" onclick="selectOption(this, 'size')">L</div>
+                                <div class="size-option" onclick="selectOption(this, 'size')">XL</div>
+                            </div>
+                        </div>
+
+                        <div class="option-group">
+                            <div class="option-title">Color:</div>
+                            <div class="color-options">
+                                <div class="color-option brown active" onclick="selectOption(this, 'color')" title="Brown"></div>
+                                <div class="color-option black" onclick="selectOption(this, 'color')" title="Black"></div>
+                                <div class="color-option navy" onclick="selectOption(this, 'color')" title="Navy"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quantity Controls -->
+                    <div class="quantity-controls">
+                        <span class="quantity-label">Quantity:</span>
+                        <div class="quantity-selector">
+                            <button class="quantity-btn" onclick="updateQuantity(-1)">-</button>
+                            <input type="number" class="quantity-input" value="1" min="1" max="3" id="quantityInput" readonly>
+                            <button class="quantity-btn" onclick="updateQuantity(1)">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn-add-cart" onclick="addToCart()">
+                            <i class="fas fa-shopping-bag me-2"></i>Add to Cart
+                        </button>
+                        <button class="btn-wishlist" onclick="toggleWishlist(this)">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+
+                    <!-- Delivery Info -->
+                    <div class="delivery-info">
+                        <div class="delivery-item">
+                            <i class="fas fa-truck delivery-icon"></i>
+                            <div>
+                                <strong>Free Shipping</strong> - On orders over $200
+                            </div>
+                        </div>
+                        <div class="delivery-item">
+                            <i class="fas fa-undo delivery-icon"></i>
+                            <div>
+                                <strong>Free Returns</strong> - 30 days return policy
+                            </div>
+                        </div>
+                        <div class="delivery-item">
+                            <i class="fas fa-shield-alt delivery-icon"></i>
+                            <div>
+                                <strong>Authenticity Guarantee</strong> - 100% genuine vintage
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Details Tabs -->
+            <div class="product-details">
+                <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">Description</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="composition-tab" data-bs-toggle="tab" data-bs-target="#composition" type="button" role="tab">Composition</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="care-tab" data-bs-toggle="tab" data-bs-target="#care" type="button" role="tab">Care Instructions</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button" role="tab">Shipping</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">Reviews (24)</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="productTabsContent">
+                    <!-- Description Tab -->
+                    <div class="tab-pane fade show active" id="description" role="tabpanel">
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <h4>Product Description</h4>
+                                <p>This authentic 1970s leather bomber jacket is a true vintage treasure. Crafted from premium genuine leather, this jacket showcases the quintessential style of the disco era with its classic bomber silhouette and retro details.</p>
+
+                                <p>The jacket features original brass hardware, including a sturdy front zipper and button closures on the pockets. The interior is lined with vintage-inspired satin fabric, maintaining the authentic feel while ensuring comfort.</p>
+
+                                <h5>Key Features:</h5>
+                                <ul>
+                                    <li>Authentic 1970s design and construction</li>
+                                    <li>Premium genuine leather exterior</li>
+                                    <li>Original brass hardware and zippers</li>
+                                    <li>Ribbed collar, cuffs, and hem</li>
+                                    <li>Two front pockets with button closures</li>
+                                    <li>Interior chest pocket</li>
+                                    <li>Fully lined with satin fabric</li>
+                                </ul>
+
+                                <h5>Condition:</h5>
+                                <p>Excellent vintage condition with minimal signs of wear. The leather shows beautiful natural patina that adds to its authentic character. All zippers and hardware function perfectly.</p>
+                            </div>
+                            <div class="col-lg-4">
+                                <h5>Measurements (Size M):</h5>
+                                <ul class="composition-list">
+                                    <li><span>Chest (pit to pit)</span><span>22"</span></li>
+                                    <li><span>Length</span><span>25"</span></li>
+                                    <li><span>Shoulder width</span><span>18"</span></li>
+                                    <li><span>Sleeve length</span><span>24"</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Composition Tab -->
+                    <div class="tab-pane fade" id="composition" role="tabpanel">
+                        <h4>Material Composition</h4>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h5>Exterior:</h5>
+                                <ul class="composition-list">
+                                    <li><span>Genuine Leather</span><span>100%</span></li>
+                                </ul>
+
+                                <h5>Lining:</h5>
+                                <ul class="composition-list">
+                                    <li><span>Polyester Satin</span><span>100%</span></li>
+                                </ul>
+
+                                <h5>Hardware:</h5>
+                                <ul class="composition-list">
+                                    <li><span>Brass Zippers</span><span>Original</span></li>
+                                    <li><span>Brass Buttons</span><span>Original</span></li>
+                                </ul>
+                            </div>
+                            <div class="col-lg-6">
+                                <h5>Origin:</h5>
+                                <p>Made in USA, circa 1975</p>
+
+                                <h5>Leather Type:</h5>
+                                <p>Premium cowhide leather with natural grain texture</p>
+
+                                <h5>Color:</h5>
+                                <p>Rich brown with natural patina developed over time</p>
+
+                                <h5>Weight:</h5>
+                                <p>Approximately 2.5 lbs (medium weight leather)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Care Instructions Tab -->
+                    <div class="tab-pane fade" id="care" role="tabpanel">
+                        <h4>Care Instructions</h4>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h5>Cleaning:</h5>
+                                <ul>
+                                    <li>Professional leather cleaning recommended</li>
+                                    <li>For minor stains, use a damp cloth with mild leather cleaner</li>
+                                    <li>Never machine wash or dry clean</li>
+                                </ul>
+                            </div>
+                            <div class="col-lg-6">
+                                <h5>Storage:</h5>
+                                <ul>
+                                    <li>Store in a cool, dry place away from direct sunlight</li>
+                                    <li>Use a padded hanger to maintain shape</li>
+                                    <li>Avoid plastic garment bags; use breathable fabric covers</li>
+
+                                    <li>Condition leather periodically with a quality leather conditioner</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Tab -->
+                    <div class="tab-pane fade" id="shipping" role="tabpanel">
+                        <h4>Shipping Information</h4>
+                        <p>We offer worldwide shipping for our vintage clothing items. Please review our shipping policies below:</p>
+                        <ul>
+                            <li><strong>Processing Time:</strong> Orders are processed within 1-2 business days.</li>
+                            <li><strong>Shipping Methods:</strong> We use USPS, UPS, and FedEx for reliable delivery.</li>
+                            <li><strong>Shipping Costs:</strong> Free shipping on orders over $200. Flat rate of $15 for orders under $200.</li>
+                            <li><strong>Delivery Time:</strong> Estimated delivery time is 3-7 business days within the USA. International shipping times vary by destination.</li>
+                            <li><strong>Tracking:</strong> A tracking number will be provided once your order ships.</li>
+                            <li><strong>Customs & Duties:</strong> International customers are responsible for any customs fees or import duties.</li>
+                        </ul>
+
+                        <p>If you have any questions about shipping, please contact our customer service team.</p>
+                    </div>
+
+                    <!-- Reviews Tab -->
+                    <div class="tab-pane fade" id="reviews" role="tabpanel">
+                        <h4>Customer Reviews</h4>
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="reviewer-avatar">JS</div>
+                                <div class="reviewer-info">
+                                    <h6>Jane Smith</h6>
+                                    <div class="stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                    <div class="review-date">March 5, 2024</div>
+                                </div>
+
+                            </div>
+                            <p>This jacket is absolutely stunning! The leather quality is top-notch and the vintage details
+                                are perfect. It fits true to size and is very comfortable. I've received so many compliments already!</p>
+                        </div>
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="reviewer-avatar">MB</div>
+                                <div class="reviewer-info">
+                                    <h6>Michael Brown</h6>
+                                    <div class="stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+
+                                    <div class="review-date">February 20, 2024</div>
+                                </div>
+                            </div>
+                            <p>Incredible find! The jacket arrived quickly and was well-packaged. The leather has a beautiful patina and the fit is perfect. Highly recommend for anyone looking for authentic vintage pieces.</p>
+                        </div>
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="reviewer-avatar">AL</div>
+                                <div class="reviewer-info">
+                                    <h6>Alice Lee</h6>
+                                    <div class="stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                    <div class="review-date">January 15, 2024</div>
+                                </div>
+                            </div>
+                            <p>I love this jacket! The quality is exceptional and it has such a unique vintage
+                                look. It fits well and is very comfortable to wear. I've gotten so many compliments on it already!</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Recommended Products Section -->
+    <section class="recommended-section">
+        <div class="container">
+            <h2 class="section-title">You Might Also Like</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="product-card">
+                        <div class="product-card-image">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <div class="product-card-body">
+                            <h5 class="product-card-title">Retro Denim Jacket</h5>
+                            <div class="product-card-price">$120.00</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="product-card">
+                        <div class="product-card-image">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+
+                        <div class="product-card-body">
+                            <h5 class="product-card-title">Classic Leather Moto Jacket</h5>
+                            <div class="product-card-price">$200.00</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="product-card">
+                        <div class="product-card-image">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <div class="product-card-body">
+                            <h5 class="product-card-title">Vintage Wool Blazer</h5>
+                            <div class="product-card-price">$150.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <script>
+        // Change Main Image on Thumbnail Click
+        function changeMainImage(thumbnail) {
+            const mainImage = document.getElementById('mainImage');
+            const thumbnails = document.querySelectorAll('.thumbnail');
+
+            thumbnails.forEach(thumb => thumb.classList.remove('active'));
+            thumbnail.classList.add('active');
+
+            // For demo purposes, just changing the icon
+            const iconClass = thumbnail
+                .querySelector('i')
+                .className;
+            mainImage.innerHTML = `<div class="image-badge sale">Sale</div><
+i class="${iconClass}"></i>`;
+        }
+        // Select Size or Color Option
+        function selectOption(option, type) {
+            const options = document.querySelectorAll(`.${type}-option`);
+            options.forEach(opt => opt.classList.remove('active'));
+            option.classList.add('active');
+        }
+        // Update Quantity
+        function updateQuantity(change) {
+            const quantityInput = document.getElementById('quantityInput');
+            let currentQuantity = parseInt(quantityInput.value);
+            const maxQuantity = parseInt(quantityInput.max);
+            currentQuantity += change;
+            if (currentQuantity < 1) currentQuantity = 1;
+            if (currentQuantity > maxQuantity) currentQuantity = maxQuantity;
+            quantityInput.value = currentQuantity;
+        }
+        // Add to Cart Function
+        function addToCart() {
+            const quantity = document.getElementById('quantityInput').value;
+            alert(`Added ${quantity} item(s) to cart!`);
+        }
+        // Toggle Wishlist Button
+        function toggleWishlist(button) {
+
+            button.classList.toggle('active');
+            if (button.classList.contains('active')) {
+                alert('Added to wishlist!');
+            } else {
+                alert('Removed from wishlist!');
+            }
+        }
+    </script>
+
+{% endblock %}
