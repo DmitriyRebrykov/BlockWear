@@ -375,7 +375,7 @@
                             {%for category in categories%}
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" value="jackets" id="jackets" checked>
-                                <label class="form-check-label" for="jackets">{{category.name}} (24)</label>
+                                <label class="form-check-label" for="jackets">{{category.name}} ({{category.products.count}})</label>
                             </div>
                             {%endfor%}
                         </div>
@@ -407,7 +407,7 @@
                             {%for size in sizes%}
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" value="xs" id="xs">
-                                <label class="form-check-label" for="xs">{{size.name}} (8)</label>
+                                <label class="form-check-label" for="xs">{{size.name}} ({{size.product_size.count}})</label>
                             </div>
                             {%endfor%}
                         </div>
@@ -469,231 +469,34 @@
 
                     <!-- Products Grid -->
                     <div class="row" id="productsGrid">
-                        <!-- Product Card 1 -->
-                        <div class="col-lg-4 col-md-6" data-category="jackets" data-era="1970s" data-price="185">
-                            <div class="card product-card">
-                                <div class="product-image">
-                                    <div class="sale-badge">Sale</div>
-                                    <i class="fas fa-tshirt"></i>
-                                    <div class="product-overlay">
-                                        <button class="btn btn-product">Quick View</button>
-                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    </div>
-                                </div>
-                                <div class="product-info">
-                                    <div class="product-category">Vintage Jackets</div>
-                                    <h5 class="product-title">70s Leather Bomber Jacket</h5>
-                                    <p class="product-description">Authentic vintage bomber jacket from the 70s. Perfect condition with original details.</p>
-                                    <div class="product-price">
-                                        $185
-                                        <span class="product-original-price">$245</span>
-                                    </div>
-                                    <div class="product-tags">
-                                        <span class="product-tag">Leather</span>
-                                        <span class="product-tag">Size M</span>
-                                        <span class="product-tag">1970s</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Product Card 2 -->
-                        <div class="col-lg-4 col-md-6" data-category="dresses" data-era="1960s" data-price="125">
-                            <div class="card product-card">
-                                <div class="product-image">
-                                    <i class="fas fa-female"></i>
-                                    <div class="product-overlay">
-                                        <button class="btn btn-product">Quick View</button>
-                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    </div>
-                                </div>
-                                <div class="product-info">
-                                    <div class="product-category">Vintage Dresses</div>
-                                    <h5 class="product-title">60s Mod Mini Dress</h5>
-                                    <p class="product-description">Classic mod style mini dress with geometric patterns. True 60s fashion statement.</p>
-                                    <div class="product-price">$125</div>
-                                    <div class="product-tags">
-                                        <span class="product-tag">Cotton</span>
-                                        <span class="product-tag">Size S</span>
-                                        <span class="product-tag">1960s</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Product Card 3 -->
-                        <div class="col-lg-4 col-md-6" data-category="jeans" data-era="1980s" data-price="95">
-                            <div class="card product-card">
-                                <div class="product-image">
-                                    <div class="sale-badge new-badge">New</div>
-                                    <i class="fas fa-tshirt"></i>
-                                    <div class="product-overlay">
-                                        <button class="btn btn-product">Quick View</button>
-                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    </div>
-                                </div>
-                                <div class="product-info">
-                                    <div class="product-category">Vintage Jeans</div>
-                                    <h5 class="product-title">80s High-Waisted Jeans</h5>
-                                    <p class="product-description">Original Levi's high-waisted jeans from the 80s. Excellent vintage condition.</p>
-                                    <div class="product-price">$95</div>
-                                    <div class="product-tags">
-                                        <span class="product-tag">Denim</span>
-                                        <span class="product-tag">Size L</span>
-                                        <span class="product-tag">1980s</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Product Card 4 -->
-                        <div class="col-lg-4 col-md-6" data-category="shirts" data-era="1970s" data-price="75">
-                            <div class="card product-card">
-                                <div class="product-image">
-                                    <i class="fas fa-tshirt"></i>
-                                    <div class="product-overlay">
-                                        <button class="btn btn-product">Quick View</button>
-                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    </div>
-                                </div>
-                                <div class="product-info">
-                                    <div class="product-category">Vintage Shirts</div>
-                                    <h5 class="product-title">70s Psychedelic Print Shirt</h5>
-                                    <p class="product-description">Groovy psychedelic print shirt from the flower power era. Vibrant colors and patterns.</p>
-                                    <div class="product-price">$75</div>
-                                    <div class="product-tags">
-                                        <span class="product-tag">Cotton</span>
-                                        <span class="product-tag">Size M</span>
-                                        <span class="product-tag">1970s</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Product Card 5 -->
-                        <div class="col-lg-4 col-md-6" data-category="accessories" data-era="1980s" data-price="45">
-                            <div class="card product-card">
-                                <div class="product-image">
-                                    <i class="fas fa-glasses"></i>
-                                    <div class="product-overlay">
-                                        <button class="btn btn-product">Quick View</button>
-                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    </div>
-                                </div>
-                                <div class="product-info">
-                                    <div class="product-category">Vintage Accessories</div>
-                                    <h5 class="product-title">80s Oversized Sunglasses</h5>
-                                    <p class="product-description">Classic 80s oversized sunglasses with UV protection. Perfect vintage statement piece.</p>
-                                    <div class="product-price">$45</div>
-                                    <div class="product-tags">
-                                        <span class="product-tag">Sunglasses</span>
-                                        <span class="product-tag">Unisex</span>
-                                        <span class="product-tag">1980s</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Product Card 6 -->
-                        <div class="col-lg-4 col-md-6" data-category="jackets" data-era="1990s" data-price="165">
-                            <div class="card product-card">
-                                <div class="product-image">
-                                    <i class="fas fa-tshirt"></i>
-                                    <div class="product-overlay">
-                                        <button class="btn btn-product">Quick View</button>
-                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    </div>
-                                </div>
-                                <div class="product-info">
-                                    <div class="product-category">Vintage Jackets</div>
-                                    <h5 class="product-title">90s Windbreaker Jacket</h5>
-                                    <p class="product-description">Colorful 90s windbreaker with retro color blocking. Perfect for the nostalgic look.</p>
-                                    <div class="product-price">$165</div>
-                                    <div class="product-tags">
-                                        <span class="product-tag">Nylon</span>
-                                        <span class="product-tag">Size L</span>
-                                        <span class="product-tag">1990s</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Product Card 7 -->
-                        <div class="col-lg-4 col-md-6" data-category="dresses" data-era="1970s" data-price="145">
-                            <div class="card product-card">
-                                <div class="product-image">
-                                    <div class="sale-badge">Sale</div>
-                                    <i class="fas fa-female"></i>
-                                    <div class="product-overlay">
-                                        <button class="btn btn-product">Quick View</button>
-                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    </div>
-                                </div>
-                                <div class="product-info">
-                                    <div class="product-category">Vintage Dresses</div>
-                                    <h5 class="product-title">70s Bohemian Maxi Dress</h5>
-                                    <p class="product-description">Flowing bohemian maxi dress with floral print. Epitomizes 70s hippie chic style.</p>
-                                    <div class="product-price">
-                                        $145
-                                        <span class="product-original-price">$185</span>
-                                    </div>
-                                    <div class="product-tags">
-                                        <span class="product-tag">Cotton</span>
-                                        <span class="product-tag">Size M</span>
-                                        <span class="product-tag">1970s</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Product Card 8 -->
-                        <div class="col-lg-4 col-md-6" data-category="jeans" data-era="1990s" data-price="85">
-                            <div class="card product-card">
-                                <div class="product-image">
-                                    <i class="fas fa-tshirt"></i>
-                                    <div class="product-overlay">
-                                        <button class="btn btn-product">Quick View</button>
-                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    </div>
-                                </div>
-                                <div class="product-info">
-                                    <div class="product-category">Vintage Jeans</div>
-                                    <h5 class="product-title">90s Baggy Jeans</h5>
-                                    <p class="product-description">Authentic 90s baggy jeans with distressed details. Perfect for that grunge aesthetic.</p>
-                                    <div class="product-price">$85</div>
-                                    <div class="product-tags">
-                                        <span class="product-tag">Denim</span>
-                                        <span class="product-tag">Size XL</span>
-                                        <span class="product-tag">1990s</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Product Card 9 -->
-                        <div class="col-lg-4 col-md-6" data-category="accessories" data-era="1960s" data-price="35">
-                            <div class="card product-card">
-                                <div class="product-image">
-                                    <div class="sale-badge new-badge">New</div>
-                                    <i class="fas fa-hat-cowboy"></i>
-                                    <div class="product-overlay">
-                                        <button class="btn btn-product">Quick View</button>
-                                        <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    </div>
-                                </div>
-                                <div class="product-info">
-                                    <div class="product-category">Vintage Accessories</div>
-                                    <h5 class="product-title">60s Mod Pillbox Hat</h5>
-                                    <p class="product-description">Classic 60s pillbox hat in excellent condition. Perfect for completing your mod look.</p>
-                                    <div class="product-price">$35</div>
-                                    <div class="product-tags">
-                                        <span class="product-tag">Wool</span>
-                                        <span class="product-tag">One Size</span>
-                                        <span class="product-tag">1960s</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {%for product in products%}
+<div class="col-lg-4 col-md-6" data-category="jackets" data-era="1970s" data-price="185">
+    <div class="card product-card">
+        <div class="product-image">
+            <!-- <div class="sale-badge">Sale</div> -->
+            <img src="{{product.main_image.url}}" alt="{{product.name}}" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
+            <div class="product-overlay">
+                <button class="btn btn-product">Quick View</button>
+                <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
+            </div>
+        </div>
+        <div class="product-info">
+            <div class="product-category"></div>
+            <h5 class="product-title">{{product.name}}</h5>
+            <p class="product-description">{{product.description}}</p>
+            <div class="product-price">
+                ${{product.price}}
+                <!-- <span class="product-original-price">$245</span> -->
+            </div>
+            <div class="product-tags">
+                <span class="product-tag">Leather</span>
+                <span class="product-tag">Size </span>
+                <span class="product-tag">1970s</span>
+            </div>
+        </div>
+    </div>
+</div>
+{%endfor%}
                     </div>
 
                     <!-- Pagination -->

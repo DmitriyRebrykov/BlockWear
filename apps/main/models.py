@@ -10,15 +10,14 @@ class Category(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
-
     def __str__(self):
-        return f'Name:{self.name}'
+        return f'{self.name}'
 
 class Size(models.Model):
     name = models.CharField(max_length=20)
 
     def __str__(self):
-        return f'Size: {self.name}'
+        return f'{self.name}'
 
 class ProductSize(models.Model):
     size = models.ForeignKey('Size', on_delete=models.CASCADE, related_name='product_size')
@@ -35,12 +34,16 @@ class Product(models.Model):
     color = models.CharField(max_length=100)
     main_image = models.ImageField(upload_to='products/main/')
 
+    status_discount = models.BooleanField(default=False)
+
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name = 'products')
 
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+
 
 class ProductImage(models.Model):
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name = 'images')

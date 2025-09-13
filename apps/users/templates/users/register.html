@@ -1,0 +1,762 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Sign Up - Vintage Lab{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Registration Form Block */
+    .registration-form {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        padding: 2rem 0;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #f8f9fa 100%);
+    }
+
+    /* Registration Card Block */
+    .registration-card {
+        background-color: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+        overflow: hidden;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* Registration Sidebar Block */
+    .registration-sidebar {
+        background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+        color: #ffffff;
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .registration-sidebar::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="0.8" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+        opacity: 0.1;
+        animation: registration-sidebar__animation 20s ease-in-out infinite;
+    }
+
+    @keyframes registration-sidebar__animation {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(-20px, -20px) rotate(180deg); }
+    }
+
+    /* Registration Sidebar Elements */
+    .registration-sidebar__logo {
+        font-size: 3rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: -2px;
+        margin-bottom: 1rem;
+        z-index: 1;
+        position: relative;
+    }
+
+    .registration-sidebar__tagline {
+        font-size: 1.2rem;
+        font-weight: 300;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+        z-index: 1;
+        position: relative;
+    }
+
+    .registration-sidebar__features {
+        z-index: 1;
+        position: relative;
+    }
+
+    /* Feature Item Block */
+    .feature-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .feature-item__icon {
+        width: 20px;
+        margin-right: 1rem;
+        color: #ffffff;
+    }
+
+    /* Registration Content Block */
+    .registration-content {
+        padding: 3rem;
+    }
+
+    /* Form Header Block */
+    .form-header {
+        margin-bottom: 2rem;
+    }
+
+    .form-header__title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: -1px;
+        margin-bottom: 0.5rem;
+        color: #000000;
+    }
+
+    .form-header__subtitle {
+        color: #666666;
+        font-weight: 400;
+        margin-bottom: 0;
+    }
+
+    /* Social Auth Block */
+    .social-auth {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .social-auth__button {
+        flex: 1;
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        background-color: #ffffff;
+        color: #000000;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .social-auth__button:hover {
+        border-color: #000000;
+        color: #000000;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+
+    /* Form Divider Block */
+    .form-divider {
+        text-align: center;
+        margin: 1.5rem 0;
+        position: relative;
+    }
+
+    .form-divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-color: #e0e0e0;
+    }
+
+    .form-divider__text {
+        background-color: #ffffff;
+        padding: 0 1rem;
+        color: #666666;
+        font-weight: 500;
+    }
+
+    /* Registration Form Block */
+    .registration-form-block {
+        /* Container for form elements */
+    }
+
+    /* Form Field Block */
+    .form-field {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .form-field--half {
+        /* Modifier for half-width fields in row */
+    }
+
+    .form-field__input {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        background-color: #ffffff;
+        width: 100%;
+        font-size: 1rem;
+    }
+
+    .form-field__input:focus {
+        border-color: #000000;
+        box-shadow: 0 0 0 0.2rem rgba(0,0,0,0.1);
+        background-color: #ffffff;
+        outline: none;
+    }
+
+    .form-field__label {
+        color: #666666;
+        font-weight: 500;
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        transition: all 0.3s ease;
+        pointer-events: none;
+    }
+
+    .form-field__input:focus + .form-field__label,
+    .form-field__input:not(:placeholder-shown) + .form-field__label {
+        top: -0.5rem;
+        left: 0.5rem;
+        background-color: #ffffff;
+        padding: 0 0.5rem;
+        font-size: 0.875rem;
+        color: #000000;
+        font-weight: 600;
+    }
+
+    /* Password Field Block */
+    .password-field {
+        position: relative;
+    }
+
+    .password-field__toggle {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #666666;
+        cursor: pointer;
+        z-index: 10;
+        transition: all 0.3s ease;
+    }
+
+    .password-field__toggle:hover {
+        color: #000000;
+    }
+
+    /* Form Row Block */
+    .form-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-row .form-field {
+        flex: 1;
+        margin-bottom: 0;
+    }
+
+    /* Checkbox Field Block */
+    .checkbox-field {
+        margin-bottom: 1.5rem;
+    }
+
+    .checkbox-field__input {
+        margin-right: 0.5rem;
+    }
+
+    .checkbox-field__input:checked {
+        background-color: #000000;
+        border-color: #000000;
+    }
+
+    .checkbox-field__label {
+        font-weight: 500;
+        color: #000000;
+        cursor: pointer;
+    }
+
+    .checkbox-field__link {
+        color: #000000;
+        text-decoration: underline;
+        transition: all 0.3s ease;
+    }
+
+    .checkbox-field__link:hover {
+        color: #666666;
+    }
+
+    /* Submit Button Block */
+    .submit-button {
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        padding: 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        width: 100%;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+    }
+
+    .submit-button:hover {
+        background-color: #1a1a1a;
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .submit-button:disabled {
+        background-color: #666666;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .submit-button__spinner {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #ffffff;
+        border-top: 2px solid transparent;
+        border-radius: 50%;
+        animation: submit-button__spinner-animation 1s linear infinite;
+        margin-right: 0.5rem;
+    }
+
+    @keyframes submit-button__spinner-animation {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Home Button Block */
+    .home-button {
+        background: none;
+        color: #000000;
+        border: 2px solid #000000;
+        padding: 12px 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        border-radius: 10px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .home-button:hover {
+        background-color: #000000;
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    .home-button__icon {
+        /* Icon styling if needed */
+    }
+
+    /* Login Link Block */
+    .login-link {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .login-link__text {
+        margin: 0;
+    }
+
+    .login-link__link {
+        color: #000000;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .login-link__link:hover {
+        color: #666666;
+        text-decoration: underline;
+    }
+
+    /* Form Error Block */
+    .form-error {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
+
+    /* Form Success Block */
+    .form-success {
+        color: #28a745;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
+
+    .form-success--hidden {
+        display: none;
+    }
+
+    /* Alert Block */
+    .alert {
+        border-radius: 10px;
+        border: none;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert--danger {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+    }
+
+    .alert--success {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+    }
+
+    /* Responsive Modifiers */
+    @media (max-width: 768px) {
+        .registration-sidebar {
+            display: none;
+        }
+
+        .registration-content {
+            padding: 2rem 1.5rem;
+        }
+
+        .form-header__title {
+            font-size: 2rem;
+        }
+
+        .registration-form {
+            padding: 1rem 0;
+        }
+
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .form-row .form-field {
+            margin-bottom: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Registration Form Container -->
+<div class="registration-form">
+    <div class="container">
+        <div class="registration-card">
+            <div class="row g-0">
+                <!-- Left Sidebar -->
+                <div class="col-lg-5 registration-sidebar">
+                    <div class="registration-sidebar__logo">Vintage Lab</div>
+                    <p class="registration-sidebar__tagline">Join our community of vintage fashion enthusiasts</p>
+
+                    <div class="registration-sidebar__features">
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-item__icon"></i>
+                            <span>Exclusive access to rare vintage pieces</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-heart feature-item__icon"></i>
+                            <span>Create your personal wishlist</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-truck feature-item__icon"></i>
+                            <span>Free shipping on orders over $200</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-star feature-item__icon"></i>
+                            <span>Early access to new arrivals</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-shield-alt feature-item__icon"></i>
+                            <span>Secure & protected shopping</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registration Content -->
+                <div class="col-lg-7 registration-content">
+                    <!-- Form Header -->
+                    <div class="form-header">
+                        <h2 class="form-header__title">Sign Up</h2>
+                        <p class="form-header__subtitle">Create your account and start your vintage journey</p>
+                    </div>
+
+                    <!-- Django Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert--{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Social Registration -->
+                    <div class="social-auth">
+                        <a href="" class="social-auth__button">
+                            <i class="fab fa-google"></i>
+                            <span>Google</span>
+                        </a>
+                        <a href="" class="social-auth__button">
+                            <i class="fab fa-facebook-f"></i>
+                            <span>Facebook</span>
+                        </a>
+                    </div>
+
+                    <div class="form-divider">
+                        <span class="form-divider__text">or sign up with email</span>
+                    </div>
+
+                    <!-- Registration Form -->
+                    <form method="post" class="registration-form-block" id="registrationForm">
+                        {% csrf_token %}
+
+                        <div class="form-row">
+                            <div class="form-field">
+                                {{ form.first_name }}
+                                <label class="form-field__label" for="{{ form.first_name.id_for_label }}">First Name</label>
+                                {% if form.first_name.errors %}
+                                    <div class="form-error">{{ form.first_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="form-field">
+                                {{ form.last_name }}
+                                <label class="form-field__label" for="{{ form.last_name.id_for_label }}">Last Name</label>
+                                {% if form.last_name.errors %}
+                                    <div class="form-error">{{ form.last_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            {{ form.email }}
+                            <label class="form-field__label" for="{{ form.email.id_for_label }}">Email Address</label>
+                            {% if form.email.errors %}
+                                <div class="form-error">{{ form.email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-field">
+                            {{ form.username }}
+                            <label class="form-field__label" for="{{ form.username.id_for_label }}">Username</label>
+                            {% if form.username.errors %}
+                                <div class="form-error">{{ form.username.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-success form-success--hidden" id="usernameAvailable">
+                                <i class="fas fa-check"></i> Username is available
+                            </div>
+                        </div>
+
+                        <div class="form-field password-field">
+                            {{ form.password1 }}
+                            <label class="form-field__label" for="{{ form.password1.id_for_label }}">Password</label>
+                            <button type="button" class="password-field__toggle" onclick="togglePassword('{{ form.password1.id_for_label }}', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            {% if form.password1.errors %}
+                                <div class="form-error">{{ form.password1.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-field password-field">
+                            {{ form.password2 }}
+                            <label class="form-field__label" for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                            <button type="button" class="password-field__toggle" onclick="togglePassword('{{ form.password2.id_for_label }}', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            {% if form.password2.errors %}
+                                <div class="form-error">{{ form.password2.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-success form-success--hidden" id="passwordMatch">
+                                <i class="fas fa-check"></i> Passwords match
+                            </div>
+                        </div>
+
+                        <!-- Optional Phone Field -->
+                        <div class="form-field">
+                            <input type="tel" class="form-field__input" id="phone" name="phone" placeholder=" ">
+                            <label class="form-field__label" for="phone">Phone Number (Optional)</label>
+                        </div>
+
+                        <!-- Terms and Conditions -->
+                        <div class="checkbox-field">
+                            <input class="form-check-input checkbox-field__input" type="checkbox" id="terms" name="terms" required>
+                            <label class="checkbox-field__label" for="terms">
+                                I agree to the <a href="" target="_blank" class="checkbox-field__link">Terms of Service</a>
+                                and <a href="" target="_blank" class="checkbox-field__link">Privacy Policy</a>
+                            </label>
+                        </div>
+
+                        <!-- Newsletter Subscription -->
+                        <div class="checkbox-field">
+                            <input class="form-check-input checkbox-field__input" type="checkbox" id="newsletter" name="newsletter" checked>
+                            <label class="checkbox-field__label" for="newsletter">
+                                Subscribe to our newsletter for exclusive vintage finds and offers
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="submit-button" id="submitBtn">
+                            <span class="submit-button__spinner" id="loadingSpinner"></span>
+                            <span id="submitText">Create Account</span>
+                        </button>
+
+                        <!-- Back to Home -->
+                        <div class="text-center">
+                            <a href="" class="home-button">
+                                <i class="fas fa-home home-button__icon"></i>
+                                <span>Back to Home</span>
+                            </a>
+                        </div>
+                    </form>
+
+                    <!-- Login Link -->
+                    <div class="login-link">
+                        <p class="login-link__text">Already have an account? <a href="" class="login-link__link">Sign In</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Password toggle functionality
+    function togglePassword(fieldId, button) {
+        const field = document.getElementById(fieldId);
+        const icon = button.querySelector('i');
+
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            field.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    // Real-time password matching
+    document.addEventListener('DOMContentLoaded', function() {
+        const password1 = document.getElementById('{{ form.password1.id_for_label }}');
+        const password2 = document.getElementById('{{ form.password2.id_for_label }}');
+        const passwordMatch = document.getElementById('passwordMatch');
+
+        function checkPasswordMatch() {
+            if (password1.value && password2.value) {
+                if (password1.value === password2.value) {
+                    passwordMatch.classList.remove('form-success--hidden');
+                    password2.style.borderColor = '#28a745';
+                } else {
+                    passwordMatch.classList.add('form-success--hidden');
+                    password2.style.borderColor = '#dc3545';
+                }
+            } else {
+                passwordMatch.classList.add('form-success--hidden');
+                password2.style.borderColor = '#e0e0e0';
+            }
+        }
+
+        if (password1 && password2) {
+            password1.addEventListener('input', checkPasswordMatch);
+            password2.addEventListener('input', checkPasswordMatch);
+        }
+    });
+
+    // Username availability check
+    const usernameField = document.getElementById('{{ form.username.id_for_label }}');
+    if (usernameField) {
+        usernameField.addEventListener('blur', function() {
+            const username = this.value;
+            const availableMsg = document.getElementById('usernameAvailable');
+
+            if (username.length >= 3) {
+                setTimeout(() => {
+                    if (username.toLowerCase() !== 'admin' && username.toLowerCase() !== 'test') {
+                        availableMsg.classList.remove('form-success--hidden');
+                        this.style.borderColor = '#28a745';
+                    } else {
+                        availableMsg.classList.add('form-success--hidden');
+                        this.style.borderColor = '#dc3545';
+                    }
+                }, 500);
+            }
+        });
+    }
+
+    // Form submission with loading state
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+        const submitBtn = document.getElementById('submitBtn');
+        const submitText = document.getElementById('submitText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        // Show loading state
+        submitBtn.disabled = true;
+        loadingSpinner.style.display = 'inline-block';
+        submitText.textContent = 'Creating Account...';
+
+        // Form validation
+        const terms = document.getElementById('terms');
+        if (!terms.checked) {
+            e.preventDefault();
+            alert('Please accept the Terms of Service and Privacy Policy');
+
+            // Reset button state
+            submitBtn.disabled = false;
+            loadingSpinner.style.display = 'none';
+            submitText.textContent = 'Create Account';
+            return;
+        }
+    });
+
+    // Auto-focus first input
+    const firstInput = document.getElementById('{{ form.first_name.id_for_label }}');
+    if (firstInput) {
+        firstInput.focus();
+    }
+
+    // Form field animations
+    const formInputs = document.querySelectorAll('.form-field__input');
+    formInputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'translateY(-2px)';
+        });
+
+        input.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Email validation
+    const emailField = document.getElementById('{{ form.email.id_for_label }}');
+    if (emailField) {
+        emailField.addEventListener('input', function() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (this.value && !emailRegex.test(this.value)) {
+                this.style.borderColor = '#dc3545';
+            } else if (this.value) {
+                this.style.borderColor = '#28a745';
+            } else {
+                this.style.borderColor = '#e0e0e0';
+            }
+        });
+    }
+</script>
+{% endblock %}
