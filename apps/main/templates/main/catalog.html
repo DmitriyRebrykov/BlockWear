@@ -1,3 +1,4 @@
+расскажи как мне работать с формами каталога так чтоб фильтровались продукты (чекбоксы)
 {% extends "main/base.html" %}
 {%load static%}
 
@@ -359,57 +360,69 @@
 
 {%block content%}
     <section class="products-section">
-        <div class="container">
-            <div class="row">
-                <!-- Filters Sidebar -->
-                <div class="col-lg-3">
-                    <div class="filters-sidebar" id="filtersSidebar">
-                        <div class="d-flex justify-content-between align-items-center mb-3 d-lg-none">
-                            <h5 class="filter-title mb-0">Filters</h5>
-                            <button type="button" class="btn-close" onclick="toggleFilters()"></button>
-                        </div>
+    <div class="container">
+        <div class="row">
+            <!-- Filters Sidebar -->
+            <div class="col-lg-3">
+                <div class="filters-sidebar" id="filtersSidebar">
+                    <div class="d-flex justify-content-between align-items-center mb-3 d-lg-none">
+                        <h5 class="filter-title mb-0">Filters</h5>
+                        <button type="button" class="btn-close" onclick="toggleFilters()"></button>
+                    </div>
 
+                    <form method="GET" id="filterForm">
                         <!-- Category Filter -->
                         <div class="filter-group">
                             <h6 class="filter-title">Category</h6>
-                            {%for category in categories%}
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="jackets" id="jackets" checked>
-                                <label class="form-check-label" for="jackets">{{category.name}} ({{category.products.count}})</label>
-                            </div>
-                            {%endfor%}
+                            {% for field in form.categories %}
+                                <div class="form-check">
+                                    {{ field.tag }}
+                                    <label class="form-check-label" for="{{ field.id_for_label }}">
+                                        {{ field.choice_label }}
+                                        {% for cat in categories %}
+                                            {% if cat.id|stringformat:"s" == field.data|default:"" %}
+                                                ({{ cat.product_count }})
+                                            {% endif %}
+                                        {% endfor %}
+                                    </label>
+                                </div>
+                            {% endfor %}
                         </div>
 
                         <!-- Era Filter -->
                         <div class="filter-group">
                             <h6 class="filter-title">Era</h6>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="1960s" id="1960s">
-                                <label class="form-check-label" for="1960s">1960s (12)</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="1970s" id="1970s" checked>
-                                <label class="form-check-label" for="1970s">1970s (23)</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="1980s" id="1980s">
-                                <label class="form-check-label" for="1980s">1980s (31)</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="1990s" id="1990s">
-                                <label class="form-check-label" for="1990s">1990s (19)</label>
-                            </div>
+                            {% for field in form.eras %}
+                                <div class="form-check">
+                                    {{ field.tag }}
+                                    <label class="form-check-label" for="{{ field.id_for_label }}">
+                                        {{ field.choice_label }}
+                                        <!-- Статичные счетчики пока, можно сделать динамические -->
+                                        {% if field.choice_value == "1960s" %}(12){% endif %}
+                                        {% if field.choice_value == "1970s" %}(23){% endif %}
+                                        {% if field.choice_value == "1980s" %}(31){% endif %}
+                                        {% if field.choice_value == "1990s" %}(19){% endif %}
+                                    </label>
+                                </div>
+                            {% endfor %}
                         </div>
 
                         <!-- Size Filter -->
                         <div class="filter-group">
                             <h6 class="filter-title">Size</h6>
-                            {%for size in sizes%}
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="xs" id="xs">
-                                <label class="form-check-label" for="xs">{{size.name}} ({{size.product_size.count}})</label>
-                            </div>
-                            {%endfor%}
+                            {% for field in form.sizes %}
+                                <div class="form-check">
+                                    {{ field.tag }}
+                                    <label class="form-check-label" for="{{ field.id_for_label }}">
+                                        {{ field.choice_label }}
+                                        {% for size in sizes %}
+                                            {% if size.id|stringformat:"s" == field.data|default:"" %}
+                                                ({{ size.product_count }})
+                                            {% endif %}
+                                        {% endfor %}
+                                    </label>
+                                </div>
+                            {% endfor %}
                         </div>
 
                         <!-- Price Range -->
@@ -419,254 +432,146 @@
                                 <span class="small">$50</span>
                                 <span class="small">$500</span>
                             </div>
-                            <input type="range" class="form-range price-range" min="50" max="500" value="250" id="priceRange">
+                            {{ form.price_max }}
                             <div class="text-center mt-2">
-                                <span class="small">Up to $<span id="priceValue">250</span></span>
+                                <span class="small">Up to $<span id="priceValue">{{ form.price_max.value|default:"250" }}</span></span>
                             </div>
                         </div>
 
                         <!-- Condition Filter -->
                         <div class="filter-group">
                             <h6 class="filter-title">Condition</h6>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="excellent" id="excellent">
-                                <label class="form-check-label" for="excellent">Excellent (45)</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="good" id="good">
-                                <label class="form-check-label" for="good">Good (32)</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="fair" id="fair">
-                                <label class="form-check-label" for="fair">Fair (8)</label>
-                            </div>
+                            {% for field in form.conditions %}
+                                <div class="form-check">
+                                    {{ field.tag }}
+                                    <label class="form-check-label" for="{{ field.id_for_label }}">
+                                        {{ field.choice_label }}
+                                        <!-- Статичные счетчики -->
+                                        {% if field.choice_value == "excellent" %}(45){% endif %}
+                                        {% if field.choice_value == "good" %}(32){% endif %}
+                                        {% if field.choice_value == "fair" %}(8){% endif %}
+                                    </label>
+                                </div>
+                            {% endfor %}
                         </div>
 
-                        <button class="btn-clear-filters" onclick="clearFilters()">Clear All Filters</button>
+                        <button type="button" class="btn-clear-filters" onclick="clearFilters()">Clear All Filters</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="col-lg-9">
+                <!-- Sort Controls -->
+                <div class="sort-controls d-flex justify-content-between align-items-center">
+                    <div>
+                        <button class="btn btn-outline-dark mobile-filter-btn" onclick="toggleFilters()">
+                            <i class="fas fa-filter me-2"></i>Filters
+                        </button>
+                        <span class="results-count ms-3">Showing {{ results_count }} of {{ total_products }} products</span>
+                    </div>
+                    <div>
+                        <select class="sort-select" onchange="sortProducts(this.value)">
+                            <option value="featured">Featured</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Era: Oldest First</option>
+                        </select>
                     </div>
                 </div>
 
                 <!-- Products Grid -->
-                <div class="col-lg-9">
-                    <!-- Sort Controls -->
-                    <div class="sort-controls d-flex justify-content-between align-items-center">
-                        <div>
-                            <button class="btn btn-outline-dark mobile-filter-btn" onclick="toggleFilters()">
-                                <i class="fas fa-filter me-2"></i>Filters
-                            </button>
-                            <span class="results-count ms-3">Showing 24 of 116 products</span>
+                <div class="row" id="productsGrid">
+                    {% for product in products %}
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card product-card">
+                            <div class="product-image">
+                                {% if product.main_image %}
+                                    <img src="{{product.main_image.url}}" alt="{{ product.name }}" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
+                                {% else %}
+                                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3rem; color: var(--medium-gray);">
+                                        📷
+                                    </div>
+                                {% endif %}
+                                <div class="product-overlay">
+                                    <button class="btn btn-product">Quick View</button>
+                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
+                                </div>
+                            </div>
+                            <div class="product-info">
+                                <div class="product-category">{{ product.category.name }}</div>
+                                <h5 class="product-title">{{ product.name }}</h5>
+                                <p class="product-description">{{ product.description|truncatewords:10 }}</p>
+                                <div class="product-price">
+                                    ${{ product.price }}
+                                </div>
+                                <div class="product-tags">
+                                    <span class="product-tag">{{ product.category.name }}</span>
+                                    <span class="product-tag">{{ product.era|default:"Vintage" }}</span>
+                                    <span class="product-tag">{{ product.condition|title }}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <select class="sort-select" onchange="sortProducts(this.value)">
-                                <option value="featured">Featured</option>
-                                <option value="price-low">Price: Low to High</option>
-                                <option value="price-high">Price: High to Low</option>
-                                <option value="newest">Newest First</option>
-                                <option value="oldest">Era: Oldest First</option>
-                            </select>
-                        </div>
                     </div>
+                    {% empty %}
+                    <div class="col-12 text-center">
+                        <p class="h4 text-muted">No products found matching your filters</p>
+                    </div>
+                    {% endfor %}
+                </div>
 
-                    <!-- Products Grid -->
-                    <div class="row" id="productsGrid">
-                        {%for product in products%}
-<div class="col-lg-4 col-md-6" data-category="jackets" data-era="1970s" data-price="185">
-    <div class="card product-card">
-        <div class="product-image">
-            <!-- <div class="sale-badge">Sale</div> -->
-            <img src="{{product.main_image.url}}" alt="{{product.name}}" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
-            <div class="product-overlay">
-                <button class="btn btn-product">Quick View</button>
-                <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-            </div>
-        </div>
-        <div class="product-info">
-            <div class="product-category"></div>
-            <h5 class="product-title">{{product.name}}</h5>
-            <p class="product-description">{{product.description}}</p>
-            <div class="product-price">
-                ${{product.price}}
-                <!-- <span class="product-original-price">$245</span> -->
-            </div>
-            <div class="product-tags">
-                <span class="product-tag">Leather</span>
-                <span class="product-tag">Size </span>
-                <span class="product-tag">1970s</span>
-            </div>
-        </div>
-    </div>
-</div>
-{%endfor%}
-                    </div>
-
-                    <!-- Pagination -->
-                    <div class="pagination-container">
-                        <nav aria-label="Product pagination">
-                            <ul class="pagination justify-content-center">
-                                <li class="page-item disabled">
-                                    <a class="page-link" href="#" tabindex="-1">Previous</a>
-                                </li>
-                                <li class="page-item active">
-                                    <a class="page-link" href="#">1</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">2</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">3</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">4</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">5</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">Next</a>
-                                </li>
-                            </ul>
-                        </nav>
-                        <p class="text-center mt-3 text-muted">
-                            <small>Showing 1-9 of 116 products</small>
-                        </p>
-                    </div>
+                <!-- Pagination -->
+                <div class="pagination-container">
+                    <!-- Твоя существующая пагинация -->
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 <script>
-        // Price range slider
-        const priceRange = document.getElementById('priceRange');
-        const priceValue = document.getElementById('priceValue');
+// JavaScript для автоматической отправки формы при изменении фильтров
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('filterForm');
+    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+    const priceRange = form.querySelector('#priceRange');
 
+    // Автоотправка при клике на чекбоксы
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            form.submit();
+        });
+    });
+
+    // Обновление отображения цены и автоотправка
+    if (priceRange) {
         priceRange.addEventListener('input', function() {
-            priceValue.textContent = this.value;
+            document.getElementById('priceValue').textContent = this.value;
         });
 
-        // Mobile filter toggle
-        function toggleFilters() {
-            const filtersSidebar = document.getElementById('filtersSidebar');
-            filtersSidebar.classList.toggle('show');
-        }
-
-        // Clear all filters
-        function clearFilters() {
-            const checkboxes = document.querySelectorAll('.form-check-input');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = false;
-            });
-            priceRange.value = 250;
-            priceValue.textContent = '250';
-            filterProducts();
-        }
-
-        // Sort products
-        function sortProducts(sortBy) {
-            const productsGrid = document.getElementById('productsGrid');
-            const products = Array.from(productsGrid.children);
-
-            products.sort((a, b) => {
-                switch(sortBy) {
-                    case 'price-low':
-                        return parseInt(a.dataset.price) - parseInt(b.dataset.price);
-                    case 'price-high':
-                        return parseInt(b.dataset.price) - parseInt(a.dataset.price);
-                    case 'newest':
-                        return b.dataset.era.localeCompare(a.dataset.era);
-                    case 'oldest':
-                        return a.dataset.era.localeCompare(b.dataset.era);
-                    default:
-                        return 0;
-                }
-            });
-
-            // Clear and re-append sorted products
-            productsGrid.innerHTML = '';
-            products.forEach(product => productsGrid.appendChild(product));
-        }
-
-        // Filter products based on selected filters
-        function filterProducts() {
-            const products = document.querySelectorAll('[data-category]');
-            const checkedCategories = Array.from(document.querySelectorAll('input[value]:checked')).map(cb => cb.value);
-            const maxPrice = parseInt(priceRange.value);
-
-            products.forEach(product => {
-                const productCategory = product.dataset.category;
-                const productEra = product.dataset.era;
-                const productPrice = parseInt(product.dataset.price);
-
-                const categoryMatch = checkedCategories.length === 0 || checkedCategories.includes(productCategory) || checkedCategories.includes(productEra);
-                const priceMatch = productPrice <= maxPrice;
-
-                if (categoryMatch && priceMatch) {
-                    product.style.display = 'block';
-                } else {
-                    product.style.display = 'none';
-                }
-            });
-
-            updateResultsCount();
-        }
-
-        // Update results count
-        function updateResultsCount() {
-            const visibleProducts = document.querySelectorAll('[data-category][style="display: block"], [data-category]:not([style*="display: none"])');
-            const resultsCount = document.querySelector('.results-count');
-            resultsCount.textContent = `Showing ${visibleProducts.length} of 116 products`;
-        }
-
-        // Add event listeners to all filter checkboxes
-        document.querySelectorAll('.form-check-input').forEach(checkbox => {
-            checkbox.addEventListener('change', filterProducts);
+        priceRange.addEventListener('change', function() {
+            form.submit();
         });
+    }
+});
 
-        // Add event listener to price range
-        priceRange.addEventListener('input', filterProducts);
+function clearFilters() {
+    const form = document.getElementById('filterForm');
+    const inputs = form.querySelectorAll('input');
+    inputs.forEach(input => {
+        if (input.type === 'checkbox') {
+            input.checked = false;
+        } else if (input.type === 'range') {
+            input.value = 250;
+            document.getElementById('priceValue').textContent = '250';
+        }
+    });
+    form.submit();
+}
 
-        // Wishlist functionality
-        document.querySelectorAll('.btn-wishlist').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const icon = this.querySelector('i');
-                if (icon.classList.contains('far')) {
-                    icon.classList.remove('far');
-                    icon.classList.add('fas');
-                    this.style.backgroundColor = 'var(--primary-white)';
-                    this.style.color = '#ff4757';
-                } else {
-                    icon.classList.remove('fas');
-                    icon.classList.add('far');
-                    this.style.backgroundColor = 'transparent';
-                    this.style.color = 'var(--primary-white)';
-                }
-            });
-        });
-
-        // Smooth scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Close mobile filters when clicking outside
-        document.addEventListener('click', function(event) {
-            const filtersSidebar = document.getElementById('filtersSidebar');
-            const mobileFilterBtn = document.querySelector('.mobile-filter-btn');
-
-            if (!filtersSidebar.contains(event.target) && !mobileFilterBtn.contains(event.target)) {
-                filtersSidebar.classList.remove('show');
-            }
-        });
-
-        // Initial filter application
-        filterProducts();
-    </script>
+function toggleFilters() {
+    const sidebar = document.getElementById('filtersSidebar');
+    sidebar.classList.toggle('show');
+}
+</script>
 {%endblock%}

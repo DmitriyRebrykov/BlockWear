@@ -23,7 +23,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class SizeAdmin(admin.ModelAdmin):
-    list_display = ['name']
+    list_display = ['id','name']
 
 
 admin.site.register(Product, ProductAdmin)
