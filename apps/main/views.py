@@ -1,49 +1,50 @@
 from django.shortcuts import render, get_object_or_404
-
-from apps.main.forms import ProductFilterForm
 from apps.main.models import Category, Size, Product
+from apps.main.filters import ProductFilter
 from django.db.models import Count
 
+
 def main_page(request):
-    return render(request,'main/main.html')
+    return render(request, 'main/main.html')
+
 
 def product_catalog(request):
+    # Получаем все товары
+    products = Product.objects.all().select_related('category').prefetch_related('productsize_set__size')
+    
+    # Применяем фильтр
+    product_filter = ProductFilter(request.GET, queryset=products)
+    filtered_products = product_filter.qs
+    
+    # Получаем категории и размеры с количеством товаров
     categories = Category.objects.annotate(product_count=Count('products'))
     sizes = Size.objects.annotate(product_count=Count('product_size'))
-    products = Product.objects.all()
-
-    form = ProductFilterForm(request.GET or None, categories=categories, sizes=sizes)
-
-    if request.method == 'GET' and form.is_valid():
-        if form.cleaned_data['categories']:
-            products = products.filter(category__id__in=form.cleaned_data['categories'])
-        if form.cleaned_data['eras']:
-            products = products.filter(era__in=form.cleaned_data['eras'])
-        if form.cleaned_data['sizes']:
-            products = products.filter(productsize__size__id__in=form.cleaned_data['sizes']).distinct()
-        if form.cleaned_data['conditions']:
-            products = products.filter(condition__in=form.cleaned_data['conditions'])
-        if form.cleaned_data['price_max']:
-            products = products.filter(price__lte=form.cleaned_data['price_max'])
-
+    
+    # Подсчитываем количество
     total_products = Product.objects.count()
-    filtered_count = products.count()
-
+    filtered_count = filtered_products.count()
+    
     context = {
-        'form': form,
-        'products': products,
+        'filter': product_filter,  # Передаем фильтр (он содержит форму)
+        'products': filtered_products,
         'categories': categories,
         'sizes': sizes,
         'results_count': filtered_count,
         'total_products': total_products,
     }
-
+    
     return render(request, 'main/catalog.html', context)
 
+
 def product_detail(request, id, slug):
-    product = get_object_or_404(Product,id=id, slug=slug, )
-    contex = {'product': product }
-    return render(request, 'main/product_detail.html', context=contex)
-    
+    product = get_object_or_404(
+        Product.objects.select_related('category').prefetch_related('images', 'productsize_set__size'),
+        id=id,
+        slug=slug
+    )
+    context = {'product': product}
+    return render(request, 'main/product_detail.html', context=context)
+
+
 def wishlist(request):
     return render(request, 'main/wishlist.html', context={})
