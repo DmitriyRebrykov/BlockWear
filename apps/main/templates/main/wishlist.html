@@ -1,0 +1,827 @@
+{% extends 'main/base.html' %}
+
+{% block title %}My Wishlist - Vintage Lab{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Wishlist Page Block */
+    .wishlist-page {
+        min-height: calc(100vh - 200px);
+        padding: 2rem 0;
+        background-color: #f8f9fa;
+    }
+
+    /* Page Header Block */
+    .page-header {
+        background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+        padding: 80px 0 40px;
+        color: #ffffff;
+        margin-bottom: 3rem;
+    }
+
+    .page-header__title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: -2px;
+        margin-bottom: 1rem;
+        animation: page-header__slide-in 0.6s ease-out;
+    }
+
+    .page-header__subtitle {
+        font-size: 1.2rem;
+        font-weight: 300;
+        opacity: 0.9;
+        animation: page-header__slide-in 0.6s ease-out 0.2s both;
+    }
+
+    @keyframes page-header__slide-in {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Wishlist Stats Block */
+    .wishlist-stats {
+        background-color: #ffffff;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    /* Stat Item Block */
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .stat-item__number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #000000;
+        display: block;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-item__label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #666666;
+    }
+
+    /* Wishlist Actions Block */
+    .wishlist-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .wishlist-actions__filter {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    /* Filter Button Block */
+    .filter-button {
+        padding: 0.5rem 1rem;
+        border: 2px solid #e0e0e0;
+        background-color: #ffffff;
+        color: #000000;
+        border-radius: 8px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .filter-button:hover {
+        border-color: #000000;
+    }
+
+    .filter-button--active {
+        background-color: #000000;
+        color: #ffffff;
+        border-color: #000000;
+    }
+
+    /* Action Button Block */
+    .action-button {
+        padding: 0.5rem 1.5rem;
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .action-button:hover {
+        background-color: #1a1a1a;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .action-button--outline {
+        background-color: transparent;
+        color: #000000;
+        border: 2px solid #000000;
+    }
+
+    .action-button--outline:hover {
+        background-color: #000000;
+        color: #ffffff;
+    }
+
+    .action-button__icon {
+        font-size: 1rem;
+    }
+
+    /* Wishlist Grid Block */
+    .wishlist-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    /* Wishlist Item Card Block */
+    .wishlist-card {
+        background-color: #ffffff;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .wishlist-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .wishlist-card__image {
+        height: 300px;
+        background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 50%, #f0f0f0 100%);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .wishlist-card__placeholder {
+        font-size: 4rem;
+        color: #666666;
+        opacity: 0.3;
+    }
+
+    .wishlist-card__badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background-color: #000000;
+        color: #ffffff;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        z-index: 2;
+    }
+
+    .wishlist-card__badge--sale {
+        background-color: #dc3545;
+    }
+
+    .wishlist-card__badge--new {
+        background-color: #28a745;
+    }
+
+    .wishlist-card__overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, rgba(0,0,0,0.8), rgba(0,0,0,0.4));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 1rem;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .wishlist-card:hover .wishlist-card__overlay {
+        opacity: 1;
+    }
+
+    .wishlist-card__remove {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background-color: rgba(255, 255, 255, 0.9);
+        color: #dc3545;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 3;
+    }
+
+    .wishlist-card__remove:hover {
+        background-color: #dc3545;
+        color: #ffffff;
+        transform: rotate(90deg);
+    }
+
+    /* Overlay Button Block */
+    .overlay-button {
+        background-color: #ffffff;
+        color: #000000;
+        border: none;
+        padding: 10px 25px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        cursor: pointer;
+    }
+
+    .overlay-button:hover {
+        background-color: #000000;
+        color: #ffffff;
+        transform: scale(1.05);
+    }
+
+    .overlay-button__icon {
+        margin-right: 0.5rem;
+    }
+
+    /* Wishlist Card Content Block */
+    .wishlist-card__content {
+        padding: 1.5rem;
+    }
+
+    .wishlist-card__category {
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #666666;
+        margin-bottom: 0.5rem;
+    }
+
+    .wishlist-card__title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        color: #000000;
+        line-height: 1.4;
+    }
+
+    .wishlist-card__description {
+        font-size: 0.9rem;
+        color: #666666;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    /* Price Block */
+    .price-block {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .price-block__current {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #000000;
+    }
+
+    .price-block__original {
+        font-size: 1rem;
+        color: #666666;
+        text-decoration: line-through;
+    }
+
+    .price-block__discount {
+        background-color: #dc3545;
+        color: #ffffff;
+        padding: 0.2rem 0.5rem;
+        border-radius: 10px;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+
+    /* Stock Status Block */
+    .stock-status {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .stock-status__icon {
+        font-size: 1rem;
+    }
+
+    .stock-status--in-stock {
+        color: #28a745;
+    }
+
+    .stock-status--low-stock {
+        color: #fd7e14;
+    }
+
+    .stock-status--out-stock {
+        color: #dc3545;
+    }
+
+    /* Card Actions Block */
+    .card-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .card-actions__button {
+        flex: 1;
+        padding: 10px;
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .card-actions__button:hover {
+        background-color: #1a1a1a;
+        transform: translateY(-2px);
+    }
+
+    .card-actions__button--secondary {
+        background-color: transparent;
+        color: #000000;
+        border: 2px solid #000000;
+    }
+
+    .card-actions__button--secondary:hover {
+        background-color: #000000;
+        color: #ffffff;
+    }
+
+    /* Empty State Block */
+    .empty-state {
+        background-color: #ffffff;
+        border-radius: 15px;
+        padding: 4rem 2rem;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .empty-state__icon {
+        font-size: 5rem;
+        color: #e0e0e0;
+        margin-bottom: 2rem;
+    }
+
+    .empty-state__title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #000000;
+    }
+
+    .empty-state__description {
+        font-size: 1.1rem;
+        color: #666666;
+        margin-bottom: 2rem;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .empty-state__button {
+        padding: 15px 40px;
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .empty-state__button:hover {
+        background-color: #1a1a1a;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        text-decoration: none;
+        color: #ffffff;
+    }
+
+    /* Notification Block */
+    .notification {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background-color: #28a745;
+        color: #ffffff;
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        z-index: 1000;
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .notification--visible {
+        transform: translateX(0);
+    }
+
+    .notification--error {
+        background-color: #dc3545;
+    }
+
+    .notification__icon {
+        font-size: 1.2rem;
+    }
+
+    /* Responsive Modifiers */
+    @media (max-width: 768px) {
+        .page-header__title {
+            font-size: 2.5rem;
+        }
+
+        .wishlist-stats {
+            flex-direction: column;
+        }
+
+        .stat-item {
+            padding: 0.5rem;
+        }
+
+        .wishlist-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .wishlist-actions__filter {
+            flex-wrap: wrap;
+        }
+
+        .wishlist-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .action-button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .page-header {
+            padding: 60px 0 30px;
+        }
+
+        .wishlist-card__image {
+            height: 250px;
+        }
+
+        .empty-state {
+            padding: 3rem 1.5rem;
+        }
+
+        .empty-state__icon {
+            font-size: 3rem;
+        }
+
+        .empty-state__title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1 class="page-header__title">My Wishlist</h1>
+                <p class="page-header__subtitle">Your curated collection of vintage treasures</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Wishlist Page -->
+<div class="wishlist-page">
+    <div class="container">
+        
+        <!-- Wishlist Stats -->
+        <div class="wishlist-stats">
+            <div class="stat-item">
+                <span class="stat-item__number">{{ wishlist_count|default:12 }}</span>
+                <span class="stat-item__label">Items</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-item__number">${{ total_value|default:1240 }}</span>
+                <span class="stat-item__label">Total Value</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-item__number">{{ in_stock_count|default:10 }}</span>
+                <span class="stat-item__label">In Stock</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-item__number">{{ on_sale_count|default:3 }}</span>
+                <span class="stat-item__label">On Sale</span>
+            </div>
+        </div>
+
+        <!-- Wishlist Actions -->
+        <div class="wishlist-actions">
+            <div class="wishlist-actions__filter">
+                <button class="filter-button filter-button--active" data-filter="all" onclick="filterWishlist('all', this)">
+                    All Items
+                </button>
+                <button class="filter-button" data-filter="in-stock" onclick="filterWishlist('in-stock', this)">
+                    In Stock
+                </button>
+                <button class="filter-button" data-filter="sale" onclick="filterWishlist('sale', this)">
+                    On Sale
+                </button>
+                <button class="filter-button" data-filter="out-stock" onclick="filterWishlist('out-stock', this)">
+                    Out of Stock
+                </button>
+            </div>
+            <div>
+                <button class="action-button" onclick="addAllToCart()">
+                    <i class="fas fa-shopping-bag action-button__icon"></i>
+                    <span>Add All to Cart</span>
+                </button>
+                <button class="action-button action-button--outline" onclick="shareWishlist()">
+                    <i class="fas fa-share-alt action-button__icon"></i>
+                    <span>Share</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Wishlist Grid -->
+        <div class="wishlist-grid" id="wishlistGrid">
+            
+            <!-- Wishlist Item 1 -->
+            <div class="wishlist-card" data-status="in-stock" data-sale="true">
+                <div class="wishlist-card__image" style="background-image: url('https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=300&fit=crop');">
+                    <div class="wishlist-card__badge wishlist-card__badge--sale">Sale</div>
+                    <div class="wishlist-card__placeholder">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <button class="wishlist-card__remove" onclick="removeFromWishlist(this, '70s Leather Bomber Jacket')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="wishlist-card__overlay">
+                        <button class="overlay-button" onclick="quickView(1)">
+                            <i class="fas fa-eye overlay-button__icon"></i>Quick View
+                        </button>
+                        <button class="overlay-button" onclick="addToCart(1)">
+                            <i class="fas fa-shopping-bag overlay-button__icon"></i>Add to Cart
+                        </button>
+                    </div>
+                </div>
+                <div class="wishlist-card__content">
+                    <div class="wishlist-card__category">Vintage Jackets</div>
+                    <h3 class="wishlist-card__title">70s Leather Bomber Jacket</h3>
+                    <p class="wishlist-card__description">Authentic vintage bomber jacket from the 70s</p>
+                    <div class="price-block">
+                        <span class="price-block__current">$185.00</span>
+                        <span class="price-block__original">$245.00</span>
+                        <span class="price-block__discount">-24%</span>
+                    </div>
+                    <div class="stock-status stock-status--in-stock">
+                        <i class="fas fa-check-circle stock-status__icon"></i>
+                        <span>In Stock</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="card-actions__button" onclick="addToCart(1)">
+                            <i class="fas fa-shopping-bag"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wishlist Item 2 -->
+            <div class="wishlist-card" data-status="in-stock" data-sale="false">
+                <div class="wishlist-card__image" style="background-image: url('https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=300&fit=crop');">
+                    <div class="wishlist-card__placeholder">
+                        <i class="fas fa-female"></i>
+                    </div>
+                    <button class="wishlist-card__remove" onclick="removeFromWishlist(this, '60s Mod Mini Dress')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="wishlist-card__overlay">
+                        <button class="overlay-button" onclick="quickView(2)">
+                            <i class="fas fa-eye overlay-button__icon"></i>Quick View
+                        </button>
+                        <button class="overlay-button" onclick="addToCart(2)">
+                            <i class="fas fa-shopping-bag overlay-button__icon"></i>Add to Cart
+                        </button>
+                    </div>
+                </div>
+                <div class="wishlist-card__content">
+                    <div class="wishlist-card__category">Vintage Dresses</div>
+                    <h3 class="wishlist-card__title">60s Mod Mini Dress</h3>
+                    <p class="wishlist-card__description">Classic mod style mini dress with geometric patterns</p>
+                    <div class="price-block">
+                        <span class="price-block__current">$125.00</span>
+                    </div>
+                    <div class="stock-status stock-status--in-stock">
+                        <i class="fas fa-check-circle stock-status__icon"></i>
+                        <span>In Stock</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="card-actions__button" onclick="addToCart(2)">
+                            <i class="fas fa-shopping-bag"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wishlist Item 3 -->
+            <div class="wishlist-card" data-status="in-stock" data-sale="true">
+                <div class="wishlist-card__image" style="background-image: url('https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=300&fit=crop');">
+                    <div class="wishlist-card__badge wishlist-card__badge--new">New</div>
+                    <div class="wishlist-card__placeholder">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <button class="wishlist-card__remove" onclick="removeFromWishlist(this, '80s High-Waisted Jeans')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="wishlist-card__overlay">
+                        <button class="overlay-button" onclick="quickView(3)">
+                            <i class="fas fa-eye overlay-button__icon"></i>Quick View
+                        </button>
+                        <button class="overlay-button" onclick="addToCart(3)">
+                            <i class="fas fa-shopping-bag overlay-button__icon"></i>Add to Cart
+                        </button>
+                    </div>
+                </div>
+                <div class="wishlist-card__content">
+                    <div class="wishlist-card__category">Vintage Jeans</div>
+                    <h3 class="wishlist-card__title">80s High-Waisted Jeans</h3>
+                    <p class="wishlist-card__description">Original Levi's high-waisted jeans</p>
+                    <div class="price-block">
+                        <span class="price-block__current">$95.00</span>
+                    </div>
+                    <div class="stock-status stock-status--in-stock">
+                        <i class="fas fa-check-circle stock-status__icon"></i>
+                        <span>In Stock</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="card-actions__button" onclick="addToCart(3)">
+                            <i class="fas fa-shopping-bag"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wishlist Item 4 (Low Stock) -->
+            <div class="wishlist-card" data-status="low-stock" data-sale="false">
+                <div class="wishlist-card__image" style="background-image: url('https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=300&fit=crop');">
+                    <div class="wishlist-card__placeholder">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <button class="wishlist-card__remove" onclick="removeFromWishlist(this, '70s Psychedelic Shirt')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="wishlist-card__overlay">
+                        <button class="overlay-button" onclick="quickView(4)">
+                            <i class="fas fa-eye overlay-button__icon"></i>Quick View
+                        </button>
+                        <button class="overlay-button" onclick="addToCart(4)">
+                            <i class="fas fa-shopping-bag overlay-button__icon"></i>Add to Cart
+                        </button>
+                    </div>
+                </div>
+                <div class="wishlist-card__content">
+                    <div class="wishlist-card__category">Vintage Shirts</div>
+                    <h3 class="wishlist-card__title">70s Psychedelic Shirt</h3>
+                    <p class="wishlist-card__description">Groovy psychedelic print shirt</p>
+                    <div class="price-block">
+                        <span class="price-block__current">$75.00</span>
+                    </div>
+                    <div class="stock-status stock-status--low-stock">
+                        <i class="fas fa-exclamation-circle stock-status__icon"></i>
+                        <span>Only 2 left!</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="card-actions__button" onclick="addToCart(4)">
+                            <i class="fas fa-shopping-bag"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wishlist Item 5 (Out of Stock) -->
+            <div class="wishlist-card" data-status="out-stock" data-sale="false">
+                <div class="wishlist-card__image" style="background-image: url('https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=300&fit=crop');">
+                    <div class="wishlist-card__placeholder">
+                        <i class="fas fa-glasses"></i>
+                    </div>
+                    <button class="wishlist-card__remove" onclick="removeFromWishlist(this, '80s Aviator Sunglasses')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="wishlist-card__overlay">
+                        <button class="overlay-button" onclick="quickView(5)">
+                            <i class="fas fa-eye overlay-button__icon"></i>Quick View
+                        </button>
+                    </div>
+                </div>
+                <div class="wishlist-card__content">
+                    <div class="wishlist-card__category">Vintage Accessories</div>
+                    <h3 class="wishlist-card__title">80s Aviator Sunglasses</h3>
+                    <p class="wishlist-card__description">Classic aviator sunglasses</p>
+                    <div class="price-block">
+                        <span class="price-block__current">$45.00</span>
+                    </div>
+                    <div class="stock-status stock-status--out-stock">
+                        <i class="fas fa-times-circle stock-status__icon"></i>
+                        <span>Out of Stock</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="card-actions__button card-actions__button--secondary" onclick="notifyMe(5)">
+                            <i class="fas fa-bell"></i> Notify Me
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wishlist Item 6 -->
+            <div class="wishlist-card" data-status="in-stock" data-sale="true">
+                <div class="wishlist-card__image" style="background-image: url('https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=300&fit=crop');">
+                    <div class="wishlist-card__badge wishlist-card__badge--sale">Sale</div>
+                    <div class="wishlist-card__placeholder">
+                        <i class="fas fa-female"></i>
+                    </div>
+                    <button class="wishlist-card__remove" onclick="removeFromWishlist(this, '70s Bohemian Maxi Dress')">
+                        <i class="fas fa-times"></i>
+                    </button>
+{%endblock%}

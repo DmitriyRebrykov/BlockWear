@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from apps.main.forms import ProductFilterForm
 from apps.main.models import Category, Size, Product
@@ -40,5 +40,10 @@ def product_catalog(request):
 
     return render(request, 'main/catalog.html', context)
 
-def product_detail(request):
-    return render(request, 'main/product_detail.html')
+def product_detail(request, id, slug):
+    product = get_object_or_404(Product,id=id, slug=slug, )
+    contex = {'product': product }
+    return render(request, 'main/product_detail.html', context=contex)
+    
+def wishlist(request):
+    return render(request, 'main/wishlist.html', context={})

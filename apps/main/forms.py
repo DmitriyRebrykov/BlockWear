@@ -18,38 +18,13 @@ class ProductFilterForm(forms.Form):
         })
     )
 
-    eras = forms.MultipleChoiceField(
-        choices=[
-            ('1960s', '1960s'),
-            ('1970s', '1970s'),
-            ('1980s', '1980s'),
-            ('1990s', '1990s')
-        ],
-        required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={
-            'class': 'form-check-input'
-        })
-    )
-
-    conditions = forms.MultipleChoiceField(
-        choices=[
-            ('excellent', 'Excellent'),
-            ('good', 'Good'),
-            ('fair', 'Fair')
-        ],
-        required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={
-            'class': 'form-check-input'
-        })
-    )
-
     price_max = forms.DateField(
         required=False,
         widget=forms.DateInput(attrs={
             'class': 'form-range price-range',
             'min': 50,
             'max': 500,
-            'value': 250,
+            'value': 500,
             'id': 'priceRange'
         })
     )

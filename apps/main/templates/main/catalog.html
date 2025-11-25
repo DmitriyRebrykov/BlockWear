@@ -1,4 +1,4 @@
-расскажи как мне работать с формами каталога так чтоб фильтровались продукты (чекбоксы)
+
 {% extends "main/base.html" %}
 {%load static%}
 
@@ -379,33 +379,28 @@
                                     {{ field.tag }}
                                     <label class="form-check-label" for="{{ field.id_for_label }}">
                                         {{ field.choice_label }}
-                                        {% for cat in categories %}
-                                            {% if cat.id|stringformat:"s" == field.data|default:"" %}
-                                                ({{ cat.product_count }})
-                                            {% endif %}
-                                        {% endfor %}
                                     </label>
                                 </div>
                             {% endfor %}
                         </div>
 
                         <!-- Era Filter -->
-                        <div class="filter-group">
-                            <h6 class="filter-title">Era</h6>
-                            {% for field in form.eras %}
-                                <div class="form-check">
-                                    {{ field.tag }}
-                                    <label class="form-check-label" for="{{ field.id_for_label }}">
-                                        {{ field.choice_label }}
-                                        <!-- Статичные счетчики пока, можно сделать динамические -->
-                                        {% if field.choice_value == "1960s" %}(12){% endif %}
-                                        {% if field.choice_value == "1970s" %}(23){% endif %}
-                                        {% if field.choice_value == "1980s" %}(31){% endif %}
-                                        {% if field.choice_value == "1990s" %}(19){% endif %}
-                                    </label>
-                                </div>
-                            {% endfor %}
-                        </div>
+<!--                        <div class="filter-group">-->
+<!--                            <h6 class="filter-title">Era</h6>-->
+<!--                            {% for field in form.eras %}-->
+<!--                                <div class="form-check">-->
+<!--                                    {{ field.tag }}-->
+<!--                                    <label class="form-check-label" for="{{ field.id_for_label }}">-->
+<!--                                        {{ field.choice_label }}-->
+<!--                                        &lt;!&ndash; Статичные счетчики пока, можно сделать динамические &ndash;&gt;-->
+<!--                                        {% if field.choice_value == "1960s" %}(12){% endif %}-->
+<!--                                        {% if field.choice_value == "1970s" %}(23){% endif %}-->
+<!--                                        {% if field.choice_value == "1980s" %}(31){% endif %}-->
+<!--                                        {% if field.choice_value == "1990s" %}(19){% endif %}-->
+<!--                                    </label>-->
+<!--                                </div>-->
+<!--                            {% endfor %}-->
+<!--                        </div>-->
 
                         <!-- Size Filter -->
                         <div class="filter-group">
@@ -439,21 +434,21 @@
                         </div>
 
                         <!-- Condition Filter -->
-                        <div class="filter-group">
-                            <h6 class="filter-title">Condition</h6>
-                            {% for field in form.conditions %}
-                                <div class="form-check">
-                                    {{ field.tag }}
-                                    <label class="form-check-label" for="{{ field.id_for_label }}">
-                                        {{ field.choice_label }}
-                                        <!-- Статичные счетчики -->
-                                        {% if field.choice_value == "excellent" %}(45){% endif %}
-                                        {% if field.choice_value == "good" %}(32){% endif %}
-                                        {% if field.choice_value == "fair" %}(8){% endif %}
-                                    </label>
-                                </div>
-                            {% endfor %}
-                        </div>
+<!--                        <div class="filter-group">-->
+<!--                            <h6 class="filter-title">Condition</h6>-->
+<!--                            {% for field in form.conditions %}-->
+<!--                                <div class="form-check">-->
+<!--                                    {{ field.tag }}-->
+<!--                                    <label class="form-check-label" for="{{ field.id_for_label }}">-->
+<!--                                        {{ field.choice_label }}-->
+<!--                                        &lt;!&ndash; Статичные счетчики &ndash;&gt;-->
+<!--                                        {% if field.choice_value == "excellent" %}(45){% endif %}-->
+<!--                                        {% if field.choice_value == "good" %}(32){% endif %}-->
+<!--                                        {% if field.choice_value == "fair" %}(8){% endif %}-->
+<!--                                    </label>-->
+<!--                                </div>-->
+<!--                            {% endfor %}-->
+<!--                        </div>-->
 
                         <button type="button" class="btn-clear-filters" onclick="clearFilters()">Clear All Filters</button>
                     </form>
@@ -462,24 +457,24 @@
 
             <!-- Products Grid -->
             <div class="col-lg-9">
-                <!-- Sort Controls -->
-                <div class="sort-controls d-flex justify-content-between align-items-center">
-                    <div>
-                        <button class="btn btn-outline-dark mobile-filter-btn" onclick="toggleFilters()">
-                            <i class="fas fa-filter me-2"></i>Filters
-                        </button>
-                        <span class="results-count ms-3">Showing {{ results_count }} of {{ total_products }} products</span>
-                    </div>
-                    <div>
-                        <select class="sort-select" onchange="sortProducts(this.value)">
-                            <option value="featured">Featured</option>
-                            <option value="price-low">Price: Low to High</option>
-                            <option value="price-high">Price: High to Low</option>
-                            <option value="newest">Newest First</option>
-                            <option value="oldest">Era: Oldest First</option>
-                        </select>
-                    </div>
-                </div>
+<!--                &lt;!&ndash; Sort Controls &ndash;&gt;-->
+<!--                <div class="sort-controls d-flex justify-content-between align-items-center">-->
+<!--                    <div>-->
+<!--                        <button class="btn btn-outline-dark mobile-filter-btn" onclick="toggleFilters()">-->
+<!--                            <i class="fas fa-filter me-2"></i>Filters-->
+<!--                        </button>-->
+<!--                        <span class="results-count ms-3">Showing {{ results_count }} of {{ total_products }} products</span>-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                        <select class="sort-select" onchange="sortProducts(this.value)">-->
+<!--                            <option value="featured">Featured</option>-->
+<!--                            <option value="price-low">Price: Low to High</option>-->
+<!--                            <option value="price-high">Price: High to Low</option>-->
+<!--                            <option value="newest">Newest First</option>-->
+<!--                            <option value="oldest">Era: Oldest First</option>-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                </div>-->
 
                 <!-- Products Grid -->
                 <div class="row" id="productsGrid">
@@ -501,7 +496,9 @@
                             </div>
                             <div class="product-info">
                                 <div class="product-category">{{ product.category.name }}</div>
-                                <h5 class="product-title">{{ product.name }}</h5>
+                                <a href="{%url 'main:product_detail' product.id product.slug %}">
+                                     <h5 class="product-title">{{ product.name }}</h5>
+                                </a>
                                 <p class="product-description">{{ product.description|truncatewords:10 }}</p>
                                 <div class="product-price">
                                     ${{ product.price }}
