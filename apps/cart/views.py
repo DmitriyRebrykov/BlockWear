@@ -10,7 +10,7 @@ def cart_detail(request):
     Страница корзины
     """
     cart = Cart(request)
-    return render(request, 'cart/detail.html', {'cart': cart})
+    return render(request, 'cart/cart_detail.html', {'cart': cart})
 
 
 @require_POST
@@ -25,17 +25,17 @@ def cart_add(request, product_id):
     
     if not size_id:
         messages.error(request, 'Выберите размер')
-        return redirect('product_detail', slug=product.slug)
+        return redirect('main:product_detail',id=product.id, slug=product.slug)
     
     # Проверяем наличие товара
     try:
         product_size = ProductSize.objects.get(product=product, size_id=size_id)
         if product_size.stock < quantity:
             messages.error(request, f'Недостаточно товара на складе. Доступно: {product_size.stock}')
-            return redirect('product_detail', slug=product.slug)
+            return redirect('product_detail',id=product.id, slug=product.slug)
     except ProductSize.DoesNotExist:
         messages.error(request, 'Выбранный размер недоступен')
-        return redirect('product_detail', slug=product.slug)
+        return redirect('product_detail',id=product.id, slug=product.slug)
     
     cart.add(product=product, size_id=size_id, quantity=quantity)
     messages.success(request, f'{product.name} добавлен в корзину')

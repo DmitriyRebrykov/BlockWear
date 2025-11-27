@@ -559,34 +559,29 @@
                 <div class="col-lg-6">
                     <div class="product-gallery">
                         <div class="main-image" id="mainImage">
-                            <div class="image-badge sale">Sale</div>
-                            <i class="fas fa-tshirt"></i>
+                                                {% if product.status_discount %}
+                                                <div class="image-badge sale">Sale</div>
+                                                {% endif %}
+                                                <img src="{{ product.main_image.url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 15px;">
                         </div>
 
                         <div class="thumbnail-images">
-                            <div class="thumbnail active" onclick="changeMainImage(this)">
-                                <i class="fas fa-tshirt"></i>
-                            </div>
-                            <div class="thumbnail" onclick="changeMainImage(this)">
-                                <i class="fas fa-tag"></i>
-                            </div>
-                            <div class="thumbnail" onclick="changeMainImage(this)">
-                                <i class="fas fa-info-circle"></i>
-                            </div>
-                            <div class="thumbnail" onclick="changeMainImage(this)">
-                                <i class="fas fa-ruler"></i>
-                            </div>
-                            <div class="thumbnail" onclick="changeMainImage(this)">
-                                <i class="fas fa-hand-paper"></i>
-                            </div>
-                        </div>
+                                                <div class="thumbnail active" onclick="changeMainImage(this)" data-image="{{ product.main_image.url }}">
+                                                    <img src="{{ product.main_image.url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                                                </div>
+                                                {% for image in product.images.all %}
+                                                <div class="thumbnail" onclick="changeMainImage(this)" data-image="{{ image.image.url }}">
+                                                    <img src="{{ image.image.url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                                                </div>
+                                                {% endfor %}
+                                            </div>
                     </div>
                 </div>
 
                 <!-- Product Info -->
                 <div class="col-lg-6">
-                    <div class="product-category">Vintage Jackets</div>
-                    <h1 class="product-title">70s Leather Bomber Jacket</h1>
+                    <div class="product-category">{{product.category}}</div>
+                    <h1 class="product-title">{{product.name}}</h1>
 
                     <div class="product-rating">
                         <div class="stars">
@@ -600,7 +595,7 @@
                     </div>
 
                     <div class="product-price">
-                        <span class="current-price">$185.00</span>
+                        <span class="current-price">${{product.price}}</span>
                         <span class="original-price">$245.00</span>
                         <span class="discount-badge">-24%</span>
                     </div>
@@ -612,45 +607,61 @@
 
                     <!-- Product Options -->
                     <div class="product-options">
-                        <div class="option-group">
-                            <div class="option-title">Size:</div>
-                            <div class="size-options">
-                                <div class="size-option" onclick="selectOption(this, 'size')">XS</div>
-                                <div class="size-option active" onclick="selectOption(this, 'size')">S</div>
-                                <div class="size-option" onclick="selectOption(this, 'size')">M</div>
-                                <div class="size-option" onclick="selectOption(this, 'size')">L</div>
-                                <div class="size-option" onclick="selectOption(this, 'size')">XL</div>
-                            </div>
+                        <div class="product-options">
+                                <div class="option-group">
+                                    <div class="option-title">Size:</div>
+                                    <div class="size-options">
+                                        {% for ps in product.productsize_set.all %}
+                                            {% if ps.stock > 0 %}
+                                                <div class="size-option" onclick="selectSize(this, {{ ps.size.id }}, {{ ps.stock }})" 
+                                                     data-size-id="{{ ps.size.id }}" 
+                                                     data-stock="{{ ps.stock }}">
+                                                    {{ ps.size.name }}
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <input type="hidden" name="size_id" id="selectedSizeId" required>
+                                </div>
                         </div>
 
-                        <div class="option-group">
+                        <!--<div class="option-group">
                             <div class="option-title">Color:</div>
                             <div class="color-options">
                                 <div class="color-option brown active" onclick="selectOption(this, 'color')" title="Brown"></div>
                                 <div class="color-option black" onclick="selectOption(this, 'color')" title="Black"></div>
                                 <div class="color-option navy" onclick="selectOption(this, 'color')" title="Navy"></div>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Quantity Controls -->
-                    <div class="quantity-controls">
-                        <span class="quantity-label">Quantity:</span>
-                        <div class="quantity-selector">
-                            <button class="quantity-btn" onclick="updateQuantity(-1)">-</button>
-                            <input type="number" class="quantity-input" value="1" min="1" max="3" id="quantityInput" readonly>
-                            <button class="quantity-btn" onclick="updateQuantity(1)">+</button>
-                        </div>
+                        </div>-->
                     </div>
 
                     <!-- Action Buttons -->
                     <div class="action-buttons">
-                        <button class="btn-add-cart" onclick="addToCart()">
-                            <i class="fas fa-shopping-bag me-2"></i>Add to Cart
-                        </button>
-                        <button class="btn-wishlist" onclick="toggleWishlist(this)">
-                            <i class="far fa-heart"></i>
-                        </button>
+                        <form method="POST" action="{% url 'cart:cart_add' product.id %}" id="addToCartForm">
+                            {% csrf_token %}
+                            <input type="hidden" name="size" id="selectedSize">
+                            <input type="hidden" name="color" id="selectedColor">
+                            
+                            <!-- Quantity Controls -->
+                            <div class="quantity-controls">
+                                <span class="quantity-label">Quantity:</span>
+                                <div class="quantity-selector">
+                                    <button type="button" class="quantity-btn" onclick="updateQuantity(-1)">-</button>
+                                    <input type="number" name="quantity" class="quantity-input" value="1" min="1" max="3" id="quantityInput" readonly>
+                                    <button type="button" class="quantity-btn" onclick="updateQuantity(1)">+</button>
+                                </div>
+                            </div>
+                        
+                            <!-- Action Buttons -->
+                            <div class="action-buttons">
+                                <button type="submit" class="btn-add-cart">
+                                    <i class="fas fa-shopping-bag me-2"></i>Add to Cart
+                                </button>
+                                <button type="button" class="btn-wishlist" onclick="toggleWishlist(this)">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                            </div>
+                        </form>
                     </div>
 
                     <!-- Delivery Info -->
@@ -920,52 +931,63 @@
     </section>
 
     <script>
-        // Change Main Image on Thumbnail Click
-        function changeMainImage(thumbnail) {
-            const mainImage = document.getElementById('mainImage');
-            const thumbnails = document.querySelectorAll('.thumbnail');
-
-            thumbnails.forEach(thumb => thumb.classList.remove('active'));
-            thumbnail.classList.add('active');
-
-            // For demo purposes, just changing the icon
-            const iconClass = thumbnail
-                .querySelector('i')
-                .className;
-            mainImage.innerHTML = `<div class="image-badge sale">Sale</div><
-i class="${iconClass}"></i>`;
+    let maxStock = 10; // По умолчанию
+    
+    function selectSize(element, sizeId, stock) {
+        // Remove active from all
+        document.querySelectorAll('.size-option').forEach(el => el.classList.remove('active'));
+        
+        // Add active to selected
+        element.classList.add('active');
+        
+        // Set hidden input
+        document.getElementById('selectedSizeId').value = sizeId;
+        
+        // Update max stock
+        maxStock = stock;
+        const quantityInput = document.getElementById('quantityInput');
+        quantityInput.max = stock;
+        
+        // Reset quantity if it exceeds new max
+        if (parseInt(quantityInput.value) > stock) {
+            quantityInput.value = stock;
         }
-        // Select Size or Color Option
-        function selectOption(option, type) {
-            const options = document.querySelectorAll(`.${type}-option`);
-            options.forEach(opt => opt.classList.remove('active'));
-            option.classList.add('active');
+    }
+    
+    function updateQuantity(change) {
+        const quantityInput = document.getElementById('quantityInput');
+        let currentQuantity = parseInt(quantityInput.value);
+        
+        currentQuantity += change;
+        
+        if (currentQuantity < 1) currentQuantity = 1;
+        if (currentQuantity > maxStock) {
+            alert(`Maximum available quantity: ${maxStock}`);
+            currentQuantity = maxStock;
         }
-        // Update Quantity
-        function updateQuantity(change) {
-            const quantityInput = document.getElementById('quantityInput');
-            let currentQuantity = parseInt(quantityInput.value);
-            const maxQuantity = parseInt(quantityInput.max);
-            currentQuantity += change;
-            if (currentQuantity < 1) currentQuantity = 1;
-            if (currentQuantity > maxQuantity) currentQuantity = maxQuantity;
-            quantityInput.value = currentQuantity;
+        
+        quantityInput.value = currentQuantity;
+    }
+    
+    // Validate before submit
+    document.getElementById('addToCartForm').addEventListener('submit', function(e) {
+        const sizeId = document.getElementById('selectedSizeId').value;
+        
+        if (!sizeId) {
+            e.preventDefault();
+            alert('Please select a size');
+            return false;
         }
-        // Add to Cart Function
-        function addToCart() {
-            const quantity = document.getElementById('quantityInput').value;
-            alert(`Added ${quantity} item(s) to cart!`);
+    });
+    
+    function toggleWishlist(button) {
+        button.classList.toggle('active');
+        if (button.classList.contains('active')) {
+            alert('Added to wishlist!');
+        } else {
+            alert('Removed from wishlist!');
         }
-        // Toggle Wishlist Button
-        function toggleWishlist(button) {
-
-            button.classList.toggle('active');
-            if (button.classList.contains('active')) {
-                alert('Added to wishlist!');
-            } else {
-                alert('Removed from wishlist!');
-            }
-        }
+    }
     </script>
 
 {% endblock %}
