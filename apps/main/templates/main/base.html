@@ -372,9 +372,9 @@
                         <li class="nav-item dropdown profile-dropdown">
                             <button class="profile-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <div class="profile-avatar">
-                                    {{ user.first_name.0|default:user.username.0|upper }}
+                                    {{ user.first_name.0|default:user.email.0|upper }}
                                 </div>
-                                <span class="d-none d-lg-inline">{{ user.first_name|default:user.username }}</span>
+                                <span class="d-none d-lg-inline">{{ user.first_name|default:user.email }}</span>
                                 <i class="fas fa-chevron-down d-none d-lg-inline"></i>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">

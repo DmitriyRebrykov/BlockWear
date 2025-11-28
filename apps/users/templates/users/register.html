@@ -170,6 +170,7 @@
         padding: 0 1rem;
         color: #666666;
         font-weight: 500;
+        position: relative;
     }
 
     /* Registration Form Block */
@@ -507,11 +508,11 @@
 
                     <!-- Social Registration -->
                     <div class="social-auth">
-                        <a href="" class="social-auth__button">
+                        <a href="#" class="social-auth__button">
                             <i class="fab fa-google"></i>
                             <span>Google</span>
                         </a>
-                        <a href="" class="social-auth__button">
+                        <a href="#" class="social-auth__button">
                             <i class="fab fa-facebook-f"></i>
                             <span>Facebook</span>
                         </a>
@@ -550,22 +551,15 @@
                             {% endif %}
                         </div>
 
-                        <div class="form-field">
-                            {{ form.username }}
-                            <label class="form-field__label" for="{{ form.username.id_for_label }}">Username</label>
-                            {% if form.username.errors %}
-                                <div class="form-error">{{ form.username.errors.0 }}</div>
-                            {% endif %}
-                            <div class="form-success form-success--hidden" id="usernameAvailable">
-                                <i class="fas fa-check"></i> Username is available
-                            </div>
-                        </div>
-
                         <div class="form-field password-field">
+                            {{ form.password1 }}
                             <label class="form-field__label" for="{{ form.password1.id_for_label }}">Password</label>
                             <button type="button" class="password-field__toggle" onclick="togglePassword('{{ form.password1.id_for_label }}', this)">
                                 <i class="fas fa-eye"></i>
                             </button>
+                            {% if form.password1.errors %}
+                                <div class="form-error">{{ form.password1.errors.0 }}</div>
+                            {% endif %}
                         </div>
 
                         <div class="form-field password-field">
@@ -592,8 +586,8 @@
                         <div class="checkbox-field">
                             <input class="form-check-input checkbox-field__input" type="checkbox" id="terms" name="terms" required>
                             <label class="checkbox-field__label" for="terms">
-                                I agree to the <a href="" target="_blank" class="checkbox-field__link">Terms of Service</a>
-                                and <a href="" target="_blank" class="checkbox-field__link">Privacy Policy</a>
+                                I agree to the <a href="#" target="_blank" class="checkbox-field__link">Terms of Service</a>
+                                and <a href="#" target="_blank" class="checkbox-field__link">Privacy Policy</a>
                             </label>
                         </div>
 
@@ -613,7 +607,7 @@
 
                         <!-- Back to Home -->
                         <div class="text-center">
-                            <a href="" class="home-button">
+                            <a href="{% url 'users:register' %}" class="home-button">
                                 <i class="fas fa-home home-button__icon"></i>
                                 <span>Back to Home</span>
                             </a>
@@ -622,7 +616,7 @@
 
                     <!-- Login Link -->
                     <div class="login-link">
-                        <p class="login-link__text">Already have an account? <a href="" class="login-link__link">Sign In</a></p>
+                        <!--<p class="login-link__text">Already have an account? <a href="" class="login-link__link">Sign In</a></p>-->
                     </div>
                 </div>
             </div>
@@ -675,27 +669,6 @@
             password2.addEventListener('input', checkPasswordMatch);
         }
     });
-
-    // Username availability check
-    const usernameField = document.getElementById('{{ form.username.id_for_label }}');
-    if (usernameField) {
-        usernameField.addEventListener('blur', function() {
-            const username = this.value;
-            const availableMsg = document.getElementById('usernameAvailable');
-
-            if (username.length >= 3) {
-                setTimeout(() => {
-                    if (username.toLowerCase() !== 'admin' && username.toLowerCase() !== 'test') {
-                        availableMsg.classList.remove('form-success--hidden');
-                        this.style.borderColor = '#28a745';
-                    } else {
-                        availableMsg.classList.add('form-success--hidden');
-                        this.style.borderColor = '#dc3545';
-                    }
-                }, 500);
-            }
-        });
-    }
 
     // Form submission with loading state
     document.getElementById('registrationForm').addEventListener('submit', function(e) {

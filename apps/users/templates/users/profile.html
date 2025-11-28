@@ -1,0 +1,847 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}My Profile - Vintage Lab{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-black: #000000;
+        --primary-white: #ffffff;
+        --light-gray: #f8f9fa;
+        --medium-gray: #666666;
+        --dark-gray: #1a1a1a;
+        --border-gray: #e0e0e0;
+        --success-green: #28a745;
+        --danger-red: #dc3545;
+        --warning-orange: #ffc107;
+    }
+
+    /* Profile Section */
+    .profile-section {
+        padding: 3rem 0;
+        background: linear-gradient(135deg, var(--light-gray) 0%, var(--primary-white) 50%, var(--light-gray) 100%);
+        min-height: calc(100vh - 200px);
+    }
+
+    /* Profile Header */
+    .profile-header {
+        background-color: var(--primary-black);
+        color: var(--primary-white);
+        padding: 3rem 0;
+        margin-bottom: 3rem;
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="0.8" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+        opacity: 0.1;
+        animation: grain-animation 20s ease-in-out infinite;
+    }
+
+    @keyframes grain-animation {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(-20px, -20px) rotate(180deg); }
+    }
+
+    .profile-avatar-large {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-white), var(--light-gray));
+        color: var(--primary-black);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: 700;
+        margin: 0 auto 1rem;
+        border: 4px solid var(--primary-white);
+        position: relative;
+        z-index: 1;
+    }
+
+    .profile-name {
+        font-size: 2rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: -1px;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .profile-email {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        position: relative;
+        z-index: 1;
+    }
+
+    .profile-stats {
+        display: flex;
+        justify-content: center;
+        gap: 3rem;
+        margin-top: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        display: block;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.8;
+    }
+
+    /* Profile Content */
+    .profile-content {
+        background-color: var(--primary-white);
+        border-radius: 20px;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    /* Tabs */
+    .profile-tabs {
+        border-bottom: 2px solid var(--border-gray);
+        background-color: var(--light-gray);
+    }
+
+    .profile-tabs .nav-link {
+        border: none;
+        color: var(--medium-gray);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 1.5rem 2rem;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+    }
+
+    .profile-tabs .nav-link:hover {
+        color: var(--primary-black);
+        background-color: rgba(0,0,0,0.05);
+    }
+
+    .profile-tabs .nav-link.active {
+        color: var(--primary-black);
+        background-color: var(--primary-white);
+        border-bottom-color: var(--primary-black);
+    }
+
+    .tab-content {
+        padding: 3rem;
+    }
+
+    /* Section Titles */
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: -1px;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .section-title::after {
+        content: '';
+        flex: 1;
+        height: 2px;
+        background: linear-gradient(to right, var(--primary-black), transparent);
+    }
+
+    /* Info Card */
+    .info-card {
+        background-color: var(--light-gray);
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border-gray);
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: var(--medium-gray);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.85rem;
+    }
+
+    .info-value {
+        font-weight: 500;
+        color: var(--primary-black);
+    }
+
+    /* Form Fields */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--primary-black);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border: 2px solid var(--border-gray);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        background-color: var(--primary-white);
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-black);
+        box-shadow: 0 0 0 0.2rem rgba(0,0,0,0.1);
+        background-color: var(--primary-white);
+        outline: none;
+    }
+
+    .form-control:disabled {
+        background-color: var(--light-gray);
+        cursor: not-allowed;
+    }
+
+    /* Buttons */
+    .btn-black {
+        background-color: var(--primary-black);
+        color: var(--primary-white);
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-black:hover {
+        background-color: var(--dark-gray);
+        color: var(--primary-white);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .btn-outline-black {
+        background: none;
+        color: var(--primary-black);
+        border: 2px solid var(--primary-black);
+        padding: 10px 28px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-black:hover {
+        background-color: var(--primary-black);
+        color: var(--primary-white);
+    }
+
+    .btn-danger-custom {
+        background-color: var(--danger-red);
+        color: var(--primary-white);
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-danger-custom:hover {
+        background-color: #c82333;
+        color: var(--primary-white);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(220,53,69,0.3);
+    }
+
+    /* Order Card */
+    .order-card {
+        background-color: var(--light-gray);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .order-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-gray);
+    }
+
+    .order-number {
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .order-status {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .order-status.delivered {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: var(--success-green);
+    }
+
+    .order-status.processing {
+        background-color: rgba(255, 193, 7, 0.1);
+        color: var(--warning-orange);
+    }
+
+    .order-status.shipped {
+        background-color: rgba(0, 123, 255, 0.1);
+        color: #007bff;
+    }
+
+    .order-details {
+        display: flex;
+        gap: 2rem;
+        font-size: 0.9rem;
+        color: var(--medium-gray);
+    }
+
+    .order-total {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--primary-black);
+        margin-top: 1rem;
+    }
+
+    /* Address Card */
+    .address-card {
+        background-color: var(--light-gray);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .address-type {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background-color: var(--primary-black);
+        color: var(--primary-white);
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .address-name {
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .address-details {
+        color: var(--medium-gray);
+        line-height: 1.8;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--medium-gray);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+    }
+
+    .empty-state h4 {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Alert Messages */
+    .alert-custom {
+        border-radius: 10px;
+        border: none;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-success-custom {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: var(--success-green);
+    }
+
+    .alert-danger-custom {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: var(--danger-red);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .profile-tabs .nav-link {
+            padding: 1rem;
+            font-size: 0.8rem;
+        }
+
+        .tab-content {
+            padding: 1.5rem;
+        }
+
+        .profile-stats {
+            gap: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+        }
+
+        .order-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .order-details {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="profile-section">
+    <div class="container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="text-center">
+                <div class="profile-avatar-large">
+                    {{ user.first_name.0|upper }}{{ user.last_name.0|upper }}
+                </div>
+                <h1 class="profile-name">{{ user.first_name }} {{ user.last_name }}</h1>
+                <p class="profile-email">{{ user.email }}</p>
+
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">12</span>
+                        <span class="stat-label">Orders</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">8</span>
+                        <span class="stat-label">Wishlist</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">$1,245</span>
+                        <span class="stat-label">Total Spent</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="profile-content">
+            <!-- Tabs Navigation -->
+            <ul class="nav nav-tabs profile-tabs" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
+                        <i class="fas fa-user me-2"></i>Personal Info
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab">
+                        <i class="fas fa-shopping-bag me-2"></i>Orders
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="addresses-tab" data-bs-toggle="tab" data-bs-target="#addresses" type="button" role="tab">
+                        <i class="fas fa-map-marker-alt me-2"></i>Addresses
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab">
+                        <i class="fas fa-lock me-2"></i>Security
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tabs Content -->
+            <div class="tab-content" id="profileTabsContent">
+                <!-- Personal Info Tab -->
+                <div class="tab-pane fade show active" id="info" role="tabpanel">
+                    <h2 class="section-title">
+                        <i class="fas fa-user"></i>
+                        Personal Information
+                    </h2>
+
+                    <!-- Django Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert-custom alert-{{ message.tags }}-custom">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Current Info Display -->
+                    <div class="info-card">
+                        <div class="info-row">
+                            <span class="info-label">First Name</span>
+                            <span class="info-value">{{ user.first_name }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Last Name</span>
+                            <span class="info-value">{{ user.last_name }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email</span>
+                            <span class="info-value">{{ user.email }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Phone</span>
+                            <span class="info-value">{{ user.phone|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Company</span>
+                            <span class="info-value">{{ user.company|default:"Not provided" }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Edit Form -->
+                    <h3 class="section-title">
+                        <i class="fas fa-edit"></i>
+                        Update Information
+                    </h3>
+
+                    <!--<form method="post" action="">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="first_name">First Name</label>
+                                    <input type="text" class="form-control" id="first_name" name="first_name" 
+                                           value="{{ user.first_name }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="last_name">Last Name</label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name" 
+                                           value="{{ user.last_name }}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="{{ user.email }}" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="phone">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" 
+                                           value="{{ user.phone|default:'' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="company">Company</label>
+                                    <input type="text" class="form-control" id="company" name="company" 
+                                           value="{{ user.company|default:'' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn-black">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                            <button type="reset" class="btn-outline-black">
+                                <i class="fas fa-undo me-2"></i>Reset
+                            </button>
+                        </div>
+                    </form>-->
+                </div>
+
+                <!-- Orders Tab -->
+                <div class="tab-pane fade" id="orders" role="tabpanel">
+                    <h2 class="section-title">
+                        <i class="fas fa-shopping-bag"></i>
+                        Order History
+                    </h2>
+
+                    <!-- Order Cards -->
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-number">Order #VL-2024-001234</div>
+                            <span class="order-status delivered">Delivered</span>
+                        </div>
+                        <div class="order-details">
+                            <div><i class="far fa-calendar me-2"></i>March 15, 2024</div>
+                            <div><i class="fas fa-box me-2"></i>3 items</div>
+                        </div>
+                        <div class="order-total">Total: $245.00</div>
+                        <div class="mt-3">
+                            <button class="btn-outline-black btn-sm">View Details</button>
+                        </div>
+                    </div>
+
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-number">Order #VL-2024-001189</div>
+                            <span class="order-status processing">Processing</span>
+                        </div>
+                        <div class="order-details">
+                            <div><i class="far fa-calendar me-2"></i>March 10, 2024</div>
+                            <div><i class="fas fa-box me-2"></i>2 items</div>
+                        </div>
+                        <div class="order-total">Total: $180.00</div>
+                        <div class="mt-3">
+                            <button class="btn-outline-black btn-sm">View Details</button>
+                        </div>
+                    </div>
+
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-number">Order #VL-2024-001145</div>
+                            <span class="order-status shipped">Shipped</span>
+                        </div>
+                        <div class="order-details">
+                            <div><i class="far fa-calendar me-2"></i>March 5, 2024</div>
+                            <div><i class="fas fa-box me-2"></i>1 item</div>
+                        </div>
+                        <div class="order-total">Total: $120.00</div>
+                        <div class="mt-3">
+                            <button class="btn-outline-black btn-sm">Track Order</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Addresses Tab -->
+                <div class="tab-pane fade" id="addresses" role="tabpanel">
+                    <h2 class="section-title">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Saved Addresses
+                    </h2>
+
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        
+                        <h3 class="mb-3">Primary Address</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="address1">Address Line 1</label>
+                            <input type="text" class="form-control" id="address1" name="address1" 
+                                   value="{{ user.address1|default:'' }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="address2">Address Line 2</label>
+                            <input type="text" class="form-control" id="address2" name="address2" 
+                                   value="{{ user.address2|default:'' }}" placeholder="Apartment, suite, etc. (optional)">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="city">City</label>
+                                    <input type="text" class="form-control" id="city" name="city" 
+                                           value="{{ user.city|default:'' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="province">State/Province</label>
+                                    <input type="text" class="form-control" id="province" name="province" 
+                                           value="{{ user.province|default:'' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="postal_code">Postal Code</label>
+                                    <input type="text" class="form-control" id="postal_code" name="postal_code" 
+                                           value="{{ user.postal_code|default:'' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="country">Country</label>
+                                    <input type="text" class="form-control" id="country" name="country" 
+                                           value="{{ user.country|default:'' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-black">
+                            <i class="fas fa-save me-2"></i>Save Address
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Security Tab -->
+                <div class="tab-pane fade" id="security" role="tabpanel">
+                    <h2 class="section-title">
+                        <i class="fas fa-lock"></i>
+                        Security Settings
+                    </h2>
+
+                    <!-- Change Password Form -->
+                    <h3 class="mb-3">Change Password</h3>
+                    
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="old_password">Current Password</label>
+                            <input type="password" class="form-control" id="old_password" name="old_password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="new_password1">New Password</label>
+                            <input type="password" class="form-control" id="new_password1" name="new_password1" required>
+                            <small class="text-muted">Minimum 8 characters with letters and numbers</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="new_password2">Confirm New Password</label>
+                            <input type="password" class="form-control" id="new_password2" name="new_password2" required>
+                        </div>
+
+                        <button type="submit" class="btn-black">
+                            <i class="fas fa-key me-2"></i>Update Password
+                        </button>
+                    </form>
+
+                    <hr class="my-5">
+
+                    <!-- Account Actions -->
+                    <h3 class="mb-3">Account Actions</h3>
+                    
+                    <div class="info-card">
+                        <h5>Delete Account</h5>
+                        <p class="text-muted mb-3">Once you delete your account, there is no going back. Please be certain.</p>
+                        <button type="button" class="btn-danger-custom" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="fas fa-trash me-2"></i>Delete My Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none;">
+            <div class="modal-header" style="border-bottom: 2px solid var(--border-gray);">
+                <h5 class="modal-title" style="font-weight: 700; text-transform: uppercase;">Confirm Account Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+                <p class="text-danger mb-0"><strong>All your orders, wishlist items, and personal data will be permanently deleted.</strong></p>
+            </div>
+            <div class="modal-footer" style="border-top: 2px solid var(--border-gray);">
+                <button type="button" class="btn-outline-black" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-danger-custom">Yes, Delete My Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-hide alerts after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert-custom');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            }, 5000);
+        });
+    });
+
+    // Password confirmation validation
+    const newPassword1 = document.getElementById('new_password1');
+    const newPassword2 = document.getElementById('new_password2');
+
+    if (newPassword1 && newPassword2) {
+        newPassword2.addEventListener('input', function() {
+            if (newPassword1.value !== newPassword2.value) {
+                newPassword2.setCustomValidity('Passwords do not match');
+                newPassword2.style.borderColor = 'var(--danger-red)';
+            } else {
+                newPassword2.setCustomValidity('');
+                newPassword2.style.borderColor = 'var(--success-green)';
+            }
+        });
+    }
+</script>
+{% endblock %}
