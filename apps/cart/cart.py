@@ -11,7 +11,6 @@ class Cart:
         self.session = request.session
         cart = self.session.get(settings.CART_SESSION_ID)
         if not cart:
-            # Создаем пустую корзину в сессии
             cart = self.session[settings.CART_SESSION_ID] = {}
         self.cart = cart
 

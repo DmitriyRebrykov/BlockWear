@@ -10,6 +10,7 @@ def cart_detail(request):
     Страница корзины
     """
     cart = Cart(request)
+        
     return render(request, 'cart/cart_detail.html', {'cart': cart})
 
 
