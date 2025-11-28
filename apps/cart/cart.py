@@ -20,7 +20,6 @@ class Cart:
         """
         product_id = str(product.id)
         size_id = str(size_id)
-        # Ключ для товара с конкретным размером
         cart_key = f"{product_id}_{size_id}"
         
         if cart_key not in self.cart:

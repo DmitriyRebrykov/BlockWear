@@ -19,29 +19,34 @@ def cart_add(request, product_id):
     """
     Добавление товара в корзину
     """
+    print("cart_add view called")
     cart = Cart(request)
     product = get_object_or_404(Product, id=product_id)
     size_id = request.POST.get('size_id')
     quantity = int(request.POST.get('quantity', 1))
     
+    print("Size ID from form:", size_id)
+    print("Quantity from form:", quantity)
+    print("All POST data:", request.POST)
+    
     if not size_id:
         messages.error(request, 'Выберите размер')
-        return redirect('main:product_detail',id=product.id, slug=product.slug)
+        print("No size selected - redirecting")
+        return redirect('main:product_detail', id=product.id, slug=product.slug)
     
-    # Проверяем наличие товара
     try:
         product_size = ProductSize.objects.get(product=product, size_id=size_id)
         if product_size.stock < quantity:
             messages.error(request, f'Недостаточно товара на складе. Доступно: {product_size.stock}')
-            return redirect('product_detail',id=product.id, slug=product.slug)
+            return redirect('main:product_detail', id=product.id, slug=product.slug)
     except ProductSize.DoesNotExist:
         messages.error(request, 'Выбранный размер недоступен')
-        return redirect('product_detail',id=product.id, slug=product.slug)
+        return redirect('main:product_detail', id=product.id, slug=product.slug)
     
     cart.add(product=product, size_id=size_id, quantity=quantity)
     messages.success(request, f'{product.name} добавлен в корзину')
     
-    return redirect('cart_detail')
+    return redirect('cart:cart_detail')
 
 
 @require_POST
@@ -52,7 +57,7 @@ def cart_remove(request, product_id, size_id):
     cart = Cart(request)
     cart.remove(product_id, size_id)
     messages.success(request, 'Товар удален из корзины')
-    return redirect('cart_detail')
+    return redirect('cart:cart_detail')
 
 
 @require_POST
@@ -71,12 +76,12 @@ def cart_update(request, product_id, size_id):
             return redirect('cart_detail')
     except ProductSize.DoesNotExist:
         messages.error(request, 'Товар не найден')
-        return redirect('cart_detail')
+        return redirect('cart:cart_detail')
     
     product = get_object_or_404(Product, id=product_id)
     cart.add(product=product, size_id=size_id, quantity=quantity, update_quantity=True)
     
-    return redirect('cart_detail')
+    return redirect('cart:cart_detail')
 
 
 def cart_clear(request):
@@ -86,4 +91,4 @@ def cart_clear(request):
     cart = Cart(request)
     cart.clear()
     messages.success(request, 'Корзина очищена')
-    return redirect('cart_detail')
+    return redirect('cart:cart_detail')

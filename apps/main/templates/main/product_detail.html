@@ -608,21 +608,25 @@
                     <!-- Product Options -->
                     <div class="product-options">
                         <div class="product-options">
-                                <div class="option-group">
-                                    <div class="option-title">Size:</div>
-                                    <div class="size-options">
-                                        {% for ps in product.productsize_set.all %}
-                                            {% if ps.stock > 0 %}
-                                                <div class="size-option" onclick="selectSize(this, {{ ps.size.id }}, {{ ps.stock }})" 
-                                                     data-size-id="{{ ps.size.id }}" 
-                                                     data-stock="{{ ps.stock }}">
-                                                    {{ ps.size.name }}
-                                                </div>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                    <input type="hidden" name="size_id" id="selectedSizeId" required>
+                            <div class="option-group">
+                                <div class="option-title">Size:</div>
+                                <div class="size-options">
+                                    {% for ps in product.productsize_set.all %}
+                                        {% if ps.stock > 0 %}
+                                            <div class="size-option" onclick="selectSize(this, {{ ps.size.id }}, {{ ps.stock }})" 
+                                                 data-size-id="{{ ps.size.id }}" 
+                                                 data-stock="{{ ps.stock }}">
+                                                {{ ps.size.name }}
+                                            </div>
+                                        {% else %}
+                                            <div class="size-option" style="opacity: 0.5; cursor: not-allowed;" 
+                                                 title="Out of stock">
+                                                {{ ps.size.name }}
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
                                 </div>
+                            </div>
                         </div>
 
                         <!--<div class="option-group">
@@ -639,22 +643,20 @@
                     <div class="action-buttons">
                         <form method="POST" action="{% url 'cart:cart_add' product.id %}" id="addToCartForm">
                             {% csrf_token %}
-                            <input type="hidden" name="size" id="selectedSize">
-                            <input type="hidden" name="color" id="selectedColor">
+                            <input type="hidden" name="size_id" id="selectedSizeId" value="" required>
+                            <input type="hidden" name="quantity" id="quantityInput" value="1">
                             
-                            <!-- Quantity Controls -->
                             <div class="quantity-controls">
                                 <span class="quantity-label">Quantity:</span>
                                 <div class="quantity-selector">
                                     <button type="button" class="quantity-btn" onclick="updateQuantity(-1)">-</button>
-                                    <input type="number" name="quantity" class="quantity-input" value="1" min="1" max="3" id="quantityInput" readonly>
+                                    <span id="quantityDisplay" style="padding: 0.5rem; min-width: 40px; text-align: center; font-weight: 600;">1</span>
                                     <button type="button" class="quantity-btn" onclick="updateQuantity(1)">+</button>
                                 </div>
                             </div>
                         
-                            <!-- Action Buttons -->
                             <div class="action-buttons">
-                                <button type="submit" class="btn-add-cart">
+                                <button type="submit" class="btn-add-cart" id="submitBtn" disabled>
                                     <i class="fas fa-shopping-bag me-2"></i>Add to Cart
                                 </button>
                                 <button type="button" class="btn-wishlist" onclick="toggleWishlist(this)">
@@ -931,63 +933,85 @@
     </section>
 
     <script>
-    let maxStock = 10; // По умолчанию
+    let maxStock = 0;
+    let currentQuantity = 1;
+    let selectedSizeId = null;
     
     function selectSize(element, sizeId, stock) {
-        // Remove active from all
-        document.querySelectorAll('.size-option').forEach(el => el.classList.remove('active'));
+        console.log('Selecting size:', sizeId, 'Stock:', stock);
+        
+        // Remove active from all size options
+        document.querySelectorAll('.size-option').forEach(el => {
+            el.classList.remove('active');
+        });
         
         // Add active to selected
         element.classList.add('active');
         
-        // Set hidden input
+        // Set the selected size
+        selectedSizeId = sizeId;
         document.getElementById('selectedSizeId').value = sizeId;
         
         // Update max stock
         maxStock = stock;
-        const quantityInput = document.getElementById('quantityInput');
-        quantityInput.max = stock;
         
         // Reset quantity if it exceeds new max
-        if (parseInt(quantityInput.value) > stock) {
-            quantityInput.value = stock;
+        if (currentQuantity > stock) {
+            currentQuantity = stock;
+            updateQuantityDisplay();
         }
+        
+        // Enable submit button
+        document.getElementById('submitBtn').disabled = false;
+        
+        console.log('Size set to:', selectedSizeId);
+        console.log('Hidden input value:', document.getElementById('selectedSizeId').value);
     }
     
     function updateQuantity(change) {
-        const quantityInput = document.getElementById('quantityInput');
-        let currentQuantity = parseInt(quantityInput.value);
+        const newQuantity = currentQuantity + change;
         
-        currentQuantity += change;
-        
-        if (currentQuantity < 1) currentQuantity = 1;
-        if (currentQuantity > maxStock) {
+        if (newQuantity < 1) return;
+        if (maxStock > 0 && newQuantity > maxStock) {
             alert(`Maximum available quantity: ${maxStock}`);
-            currentQuantity = maxStock;
+            return;
         }
         
-        quantityInput.value = currentQuantity;
+        currentQuantity = newQuantity;
+        updateQuantityDisplay();
     }
     
-    // Validate before submit
+    function updateQuantityDisplay() {
+        document.getElementById('quantityDisplay').textContent = currentQuantity;
+        document.getElementById('quantityInput').value = currentQuantity;
+    }
+    
+    // Form submission handler
     document.getElementById('addToCartForm').addEventListener('submit', function(e) {
         const sizeId = document.getElementById('selectedSizeId').value;
+        console.log('Form submitted. Size ID:', sizeId);
+        console.log('Quantity:', document.getElementById('quantityInput').value);
         
         if (!sizeId) {
             e.preventDefault();
             alert('Please select a size');
             return false;
         }
+        
+        // Form will submit normally if size is selected
+        return true;
     });
     
-    function toggleWishlist(button) {
-        button.classList.toggle('active');
-        if (button.classList.contains('active')) {
-            alert('Added to wishlist!');
-        } else {
-            alert('Removed from wishlist!');
-        }
+    // Debug function to check form state
+    function debugForm() {
+        console.log('Selected Size ID:', document.getElementById('selectedSizeId').value);
+        console.log('Quantity:', document.getElementById('quantityInput').value);
+        console.log('Submit button disabled:', document.getElementById('submitBtn').disabled);
     }
+    
+    // Initial debug
+    console.log('Form initialized');
+    debugForm();
     </script>
 
 {% endblock %}
