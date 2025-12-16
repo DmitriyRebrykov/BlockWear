@@ -207,3 +207,42 @@ class CustomUserCreationForm(UserCreationForm):
             user.save()
         
         return user
+        
+class CustomUserLoginForm(forms.Form):
+    email = forms.EmailField(required=True)
+    password = forms.CharField(required=True, widget=forms.PasswordInput)
+
+    def clean(self):
+        """Проверка данных формы"""
+        cleaned_data = super().clean()
+        
+        email = cleaned_data.get('email')
+        password = cleaned_data.get('password')
+        
+        if not email or not password:
+            raise forms.ValidationError('Пожалуйста, заполните все поля.')
+        
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise forms.ValidationError('Пользователь с таким email не найден.')
+        
+        if not user.check_password(password):
+            raise forms.ValidationError('Неверный пароль.')
+        
+        return cleaned_data
+
+    def save(self):
+        """Сохранение пользователя"""
+        user = super().save(commit=False)
+        
+        # Дополнительная настройка пользователя
+        user.email = self.cleaned_data['email'].lower()
+        user.first_name = self.cleaned_data['first_name'].title()
+        user.last_name = self.cleaned_data['last_name'].title()
+        
+        if commit:
+            user.save()
+        
+        return user
+        
