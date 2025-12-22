@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from apps.main.models import Category, Size, Product
 from apps.main.filters import ProductFilter
-from django.db.models import Count
+from django.db.models import Count, Avg, Q
+from apps.main.review_models import Review  # ← ЭТО ВАЖНО
 
 
 def main_page(request):
@@ -9,23 +10,19 @@ def main_page(request):
 
 
 def product_catalog(request):
-    # Получаем все товары
     products = Product.objects.all().select_related('category').prefetch_related('productsize_set__size')
     
-    # Применяем фильтр
     product_filter = ProductFilter(request.GET, queryset=products)
     filtered_products = product_filter.qs
     
-    # Получаем категории и размеры с количеством товаров
     categories = Category.objects.annotate(product_count=Count('products'))
     sizes = Size.objects.annotate(product_count=Count('product_size'))
     
-    # Подсчитываем количество
     total_products = Product.objects.count()
     filtered_count = filtered_products.count()
     
     context = {
-        'filter': product_filter,  # Передаем фильтр (он содержит форму)
+        'filter': product_filter,
         'products': filtered_products,
         'categories': categories,
         'sizes': sizes,
@@ -42,7 +39,22 @@ def product_detail(request, id, slug):
         id=id,
         slug=slug
     )
-    context = {'product': product}
+    
+    # Статистика отзывов
+    stats = Review.objects.filter(product=product).aggregate(
+        avg_rating=Avg('rating'),
+        total_reviews=Count('id'),
+        rating_5=Count('id', filter=Q(rating=5)),
+        rating_4=Count('id', filter=Q(rating=4)),
+        rating_3=Count('id', filter=Q(rating=3)),
+        rating_2=Count('id', filter=Q(rating=2)),
+        rating_1=Count('id', filter=Q(rating=1)),
+    )
+    
+    context = {
+        'product': product,
+        'stats': stats,
+    }
     return render(request, 'main/product_detail.html', context=context)
 
 

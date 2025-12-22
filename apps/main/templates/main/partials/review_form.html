@@ -1,0 +1,82 @@
+<div style="background: white; border-radius: 20px; max-width: 700px; width: 100%; padding: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h3>{% if review %}Edit Review{% else %}Write a Review{% endif %}</h3>
+        <button onclick="closeReviewModal()" style="border: none; background: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+    </div>
+
+    <form 
+        method="post" 
+        enctype="multipart/form-data"
+        hx-post="{% if review %}{% url 'reviews:review_edit' review.id %}{% else %}{% url 'reviews:review_create' product.id %}{% endif %}"
+        hx-target="#reviewsList"
+        hx-swap="afterbegin"
+    >
+        {% csrf_token %}
+
+        <!-- Rating Stars -->
+        <div class="mb-3">
+            <label>Rating *</label>
+            <div id="starRating">
+                {% for i in "12345" %}
+                    <input type="radio" name="rating" value="{{ forloop.counter }}" id="star{{ forloop.counter }}" required style="display: none;">
+                    <label for="star{{ forloop.counter }}" style="font-size: 2rem; color: #e0e0e0; cursor: pointer;">
+                        <i class="fas fa-star"></i>
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Title -->
+        <div class="mb-3">
+            <label class="form-label">Review Title *</label>
+            <input type="text" name="title" class="form-control" placeholder="Summarize your experience" required maxlength="200" value="{% if review %}{{ review.title }}{% endif %}">
+        </div>
+
+        <!-- Content -->
+        <div class="mb-3">
+            <label class="form-label">Your Review *</label>
+            <textarea name="content" class="form-control" placeholder="Share your thoughts..." rows="6" required maxlength="2000">{% if review %}{{ review.content }}{% endif %}</textarea>
+        </div>
+
+        <!-- Images -->
+        <div class="mb-3">
+            <label class="form-label">Photos (Optional)</label>
+            <input type="file" name="images" class="form-control" accept="image/jpeg,image/png,image/webp" multiple>
+            <small class="text-muted">Max 5 images, 5MB each</small>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-secondary" onclick="closeReviewModal()">Cancel</button>
+            <button type="submit" class="btn btn-dark">
+                <i class="fas fa-paper-plane"></i> {% if review %}Update{% else %}Submit{% endif %} Review
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.querySelectorAll('#starRating input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.querySelectorAll('#starRating label i').forEach((star, index) => {
+            if (index < this.value) {
+                star.style.color = '#ffc107';
+            } else {
+                star.style.color = '#e0e0e0';
+            }
+        });
+    });
+});
+
+document.querySelectorAll('#starRating label').forEach((label, index) => {
+    label.addEventListener('click', function() {
+        document.querySelectorAll('#starRating label i').forEach((star, i) => {
+            if (i <= index) {
+                star.style.color = '#ffc107';
+            } else {
+                star.style.color = '#e0e0e0';
+            }
+        });
+    });
+});
+</script>

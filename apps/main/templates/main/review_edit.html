@@ -1,0 +1,174 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Edit Review - BlockWear{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 4rem 0;">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Header -->
+            <div style="margin-bottom: 2rem;">
+                <a href="{% url 'main:product_detail' review.product.id review.product.slug %}" 
+                   class="btn btn-outline-dark mb-3">
+                    <i class="fas fa-arrow-left"></i> Back to Product
+                </a>
+                <h2 style="font-weight: 700; margin: 0;">Edit Your Review</h2>
+                <p class="text-muted">Reviewing: {{ review.product.title }}</p>
+            </div>
+
+            <!-- Edit Form -->
+            <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Rating -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                            Rating <span style="color: red;">*</span>
+                        </label>
+                        <div class="star-rating" style="font-size: 2rem; cursor: pointer;">
+                            {% for i in "12345" %}
+                                <i class="{% if i|add:"0" <= review.rating %}fas{% else %}far{% endif %} fa-star" 
+                                   data-rating="{{ i }}"
+                                   style="color: {% if i|add:"0" <= review.rating %}#ffc107{% else %}#ddd{% endif %};"></i>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" name="rating" id="rating-input" value="{{ review.rating }}" required>
+                    </div>
+
+                    <!-- Title -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="id_title" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                            Review Title <span style="color: red;">*</span>
+                        </label>
+                        <input type="text" 
+                               name="title" 
+                               id="id_title"
+                               class="form-control" 
+                               value="{{ review.title }}"
+                               placeholder="Summarize your experience"
+                               maxlength="200"
+                               required>
+                        {% if form.title.errors %}
+                            <div class="text-danger mt-1">{{ form.title.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Content -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="id_content" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                            Your Review <span style="color: red;">*</span>
+                        </label>
+                        <textarea name="content" 
+                                  id="id_content"
+                                  class="form-control" 
+                                  rows="6"
+                                  placeholder="Share your thoughts about this product..."
+                                  maxlength="2000"
+                                  required>{{ review.content }}</textarea>
+                        {% if form.content.errors %}
+                            <div class="text-danger mt-1">{{ form.content.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Current Images -->
+                    {% if review.images.exists %}
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                                Current Photos
+                            </label>
+                            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                                {% for image in review.images.all %}
+                                    <div style="position: relative;">
+                                        <img src="{{ image.image.url }}" 
+                                             style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                                        <a href="{% url 'reviews:review_image_delete' image.id %}"
+                                           onclick="return confirm('Delete this image?')"
+                                           style="position: absolute; top: 5px; right: 5px; background: red; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 0.8rem;">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Add New Photos -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="id_images" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                            Add New Photos (Optional)
+                        </label>
+                        <input type="file" 
+                               name="images" 
+                               id="id_images"
+                               class="form-control" 
+                               accept="image/jpeg,image/png,image/webp"
+                               multiple>
+                        <small class="text-muted">Max 5 images total, 5MB each</small>
+                    </div>
+
+                    <!-- Edit Deadline Notice -->
+                    {% if days_left %}
+                        <div class="alert alert-info" style="margin-bottom: 1.5rem;">
+                            <i class="fas fa-info-circle"></i> 
+                            You have {{ days_left }} day{{ days_left|pluralize }} left to edit this review
+                        </div>
+                    {% endif %}
+
+                    <!-- Buttons -->
+                    <div style="display: flex; gap: 1rem; justify-content: space-between;">
+                        <a href="{% url 'main:product_detail' review.product.id review.product.slug %}" 
+                           class="btn btn-secondary">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-dark">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Star rating system
+document.querySelectorAll('.star-rating i').forEach(star => {
+    star.addEventListener('click', function() {
+        const rating = this.getAttribute('data-rating');
+        document.getElementById('rating-input').value = rating;
+        
+        document.querySelectorAll('.star-rating i').forEach((s, index) => {
+            if (index < rating) {
+                s.className = 'fas fa-star';
+                s.style.color = '#ffc107';
+            } else {
+                s.className = 'far fa-star';
+                s.style.color = '#ddd';
+            }
+        });
+    });
+    
+    star.addEventListener('mouseenter', function() {
+        const rating = this.getAttribute('data-rating');
+        document.querySelectorAll('.star-rating i').forEach((s, index) => {
+            if (index < rating) {
+                s.style.color = '#ffc107';
+            }
+        });
+    });
+});
+
+document.querySelector('.star-rating').addEventListener('mouseleave', function() {
+    const currentRating = document.getElementById('rating-input').value;
+    document.querySelectorAll('.star-rating i').forEach((s, index) => {
+        if (index < currentRating) {
+            s.style.color = '#ffc107';
+        } else {
+            s.style.color = '#ddd';
+        }
+    });
+});
+</script>
+{% endblock %}

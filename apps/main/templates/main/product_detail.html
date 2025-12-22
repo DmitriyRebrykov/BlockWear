@@ -1,5 +1,7 @@
 {% extends "main/base.html" %}
 {%load static%}
+{% load review_tags %}  <!-- ← ДОБАВЬТЕ ЭТУ СТРОКУ -->
+В
 
 {% block extra_css %}
 <style>
@@ -548,6 +550,8 @@
             }
         }
     </style>
+    
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 {% endblock %}
 
 
@@ -931,7 +935,7 @@
         </div>
 
     </section>
-
+    {% include 'main/components/reviews_section.html' %}
     <script>
     let maxStock = 0;
     let currentQuantity = 1;

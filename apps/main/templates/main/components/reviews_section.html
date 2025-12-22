@@ -1,0 +1,362 @@
+{% load review_tags %}
+
+<!-- Reviews Section Component -->
+<section class="reviews-section" id="reviewsSection" style="padding: 4rem 0; background-color: #f8f9fa;">
+    <div class="container">
+        <!-- Reviews Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+            <h2 style="font-size: 2.5rem; font-weight: 700; text-transform: uppercase;">Customer Reviews</h2>
+            {% if user.is_authenticated %}
+                <button 
+                    class="btn btn-dark"
+                    onclick="openReviewModal()"
+                    type="button"
+                >
+                    <i class="fas fa-pen"></i> Write a Review
+                </button>
+            {% else %}
+                <a href="{% url 'users:register' %}?next={{ request.path }}" class="btn btn-dark">
+                    <i class="fas fa-sign-in-alt"></i> Sign in to Review
+                </a>
+            {% endif %}
+        </div>
+
+        <!-- Rating Summary -->
+        <div style="background: white; padding: 2rem; border-radius: 15px; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <h1 style="font-size: 4rem; font-weight: 800; margin: 0;">
+                        {{ stats.avg_rating|default:0|floatformat:1 }}
+                    </h1>
+                    <div style="color: #ffc107; font-size: 1.5rem; margin: 1rem 0;">
+                        {% with avg_rating=stats.avg_rating|default:0 %}
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= avg_rating %}
+                                    <i class="fas fa-star"></i>
+                                {% elif forloop.counter|add:"-1" < avg_rating %}
+                                    <i class="fas fa-star-half-alt"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        {% endwith %}
+                    </div>
+                    <p style="color: #666; margin: 0;">Based on {{ stats.total_reviews|default:0 }} review{{ stats.total_reviews|default:0|pluralize }}</p>
+                </div>
+                <div class="col-md-8">
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        {% for rating in "54321" %}
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <span style="min-width: 60px; color: #333; font-weight: 500;">{{ rating }} star</span>
+                                <div style="flex: 1; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden;">
+                                    {% if stats.total_reviews > 0 %}
+                                        {% if rating == "5" %}
+                                            {% widthratio stats.rating_5|default:0 stats.total_reviews 100 as percentage %}
+                                        {% elif rating == "4" %}
+                                            {% widthratio stats.rating_4|default:0 stats.total_reviews 100 as percentage %}
+                                        {% elif rating == "3" %}
+                                            {% widthratio stats.rating_3|default:0 stats.total_reviews 100 as percentage %}
+                                        {% elif rating == "2" %}
+                                            {% widthratio stats.rating_2|default:0 stats.total_reviews 100 as percentage %}
+                                        {% else %}
+                                            {% widthratio stats.rating_1|default:0 stats.total_reviews 100 as percentage %}
+                                        {% endif %}
+                                        <div style="width: {{ percentage }}%; height: 100%; background: #ffc107;"></div>
+                                    {% endif %}
+                                </div>
+                                <span style="min-width: 40px; text-align: right; color: #666;">
+                                    {% if rating == "5" %}{{ stats.rating_5|default:0 }}
+                                    {% elif rating == "4" %}{{ stats.rating_4|default:0 }}
+                                    {% elif rating == "3" %}{{ stats.rating_3|default:0 }}
+                                    {% elif rating == "2" %}{{ stats.rating_2|default:0 }}
+                                    {% else %}{{ stats.rating_1|default:0 }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews List -->
+        <div id="reviewsList">
+            {% for review in product.reviews.all %}
+                <div class="card mb-3" style="border: none; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div class="card-body" style="padding: 2rem;">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h5 style="margin: 0 0 0.5rem 0; font-weight: 600; color: #333;">{{ review.title }}</h5>
+                                <div style="color: #ffc107; margin-bottom: 0.5rem;">
+                                    {% for i in "12345" %}
+                                        <i class="fas fa-star {% if forloop.counter > review.rating %}text-muted{% endif %}"></i>
+                                    {% endfor %}
+                                </div>
+                                <p class="text-muted" style="margin: 0; font-size: 0.9rem;">
+                                    <strong>{{ review.user.first_name }} {{ review.user.last_name }}</strong> • {{ review.created_at|date:"F d, Y" }}
+                                    {% if review.is_verified_purchase %}
+                                        <span class="badge bg-success ms-2">Verified Purchase</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            {% if user == review.user %}
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'reviews:review_edit' review.id %}">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-danger" 
+                                               href="{% url 'reviews:review_delete' review.id %}"
+                                               onclick="return confirm('Are you sure you want to delete this review?')">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <p style="color: #555; line-height: 1.6; margin-bottom: 1rem;">{{ review.content }}</p>
+                        
+                        {% if review.images.exists %}
+                            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
+                                {% for image in review.images.all %}
+                                    <img src="{{ image.image.url }}" 
+                                         alt="Review image"
+                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: transform 0.2s;"
+                                         onclick="this.style.transform = this.style.transform ? '' : 'scale(3)'"
+                                    >
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <!-- Helpful Button -->
+                        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+                            {% if user.is_authenticated and user != review.user %}
+                                <button 
+                                    hx-post="{% url 'reviews:review_helpful' review.id %}"
+                                    hx-swap="outerHTML"
+                                    class="btn btn-sm {% if user|has_user_marked_helpful:review %}btn-success{% else %}btn-outline-secondary{% endif %}"
+                                    style="border-radius: 20px;"
+                                >
+                                    <i class="fas fa-thumbs-up"></i> 
+                                    Helpful ({{ review.helpful_count }})
+                                </button>
+                            {% else %}
+                                <span class="text-muted" style="font-size: 0.9rem;">
+                                    <i class="fas fa-thumbs-up"></i> {{ review.helpful_count }} {{ review.helpful_count|pluralize:"person,people" }} found this helpful
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="text-center py-5" style="background: white; border-radius: 15px; padding: 4rem 2rem !important;">
+                    <i class="far fa-comments" style="font-size: 4rem; color: #e0e0e0; margin-bottom: 1rem;"></i>
+                    <h3 style="color: #333; margin-bottom: 0.5rem;">No reviews yet</h3>
+                    <p style="color: #666;">Be the first to share your experience!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Review Form Modal -->
+<div id="reviewFormModal" 
+     style="display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background: rgba(0,0,0,0.7); 
+            z-index: 9999; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 2rem;
+            overflow-y: auto;">
+    <div style="background: white; 
+                border-radius: 20px; 
+                padding: 2rem; 
+                max-width: 600px; 
+                width: 100%; 
+                position: relative;
+                max-height: 90vh;
+                overflow-y: auto;">
+        <button onclick="closeReviewModal()" 
+                style="position: absolute; 
+                       top: 1rem; 
+                       right: 1rem; 
+                       background: none; 
+                       border: none; 
+                       font-size: 1.5rem; 
+                       cursor: pointer; 
+                       color: #666;
+                       width: 30px;
+                       height: 30px;
+                       display: flex;
+                       align-items: center;
+                       justify-content: center;
+                       border-radius: 50%;
+                       transition: all 0.2s;"
+                onmouseover="this.style.background='#f0f0f0'"
+                onmouseout="this.style.background='none'">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <h3 style="margin-bottom: 1.5rem; font-weight: 700;">Write a Review</h3>
+        
+        <form action="{% url 'reviews:review_create' product.id %}" 
+              method="post"
+              enctype="multipart/form-data"
+              id="reviewForm">
+            {% csrf_token %}
+            
+            <!-- Rating -->
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                    Rating <span style="color: red;">*</span>
+                </label>
+                <div class="star-rating" style="font-size: 2rem; color: #ddd; cursor: pointer;">
+                    <i class="far fa-star" data-rating="1"></i>
+                    <i class="far fa-star" data-rating="2"></i>
+                    <i class="far fa-star" data-rating="3"></i>
+                    <i class="far fa-star" data-rating="4"></i>
+                    <i class="far fa-star" data-rating="5"></i>
+                </div>
+                <input type="hidden" name="rating" id="rating-input" required>
+            </div>
+
+            <!-- Title -->
+            <div style="margin-bottom: 1.5rem;">
+                <label for="id_title" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                    Review Title <span style="color: red;">*</span>
+                </label>
+                <input type="text" 
+                       name="title" 
+                       id="id_title"
+                       class="form-control" 
+                       placeholder="Summarize your experience"
+                       maxlength="200"
+                       required>
+            </div>
+
+            <!-- Content -->
+            <div style="margin-bottom: 1.5rem;">
+                <label for="id_content" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                    Your Review <span style="color: red;">*</span>
+                </label>
+                <textarea name="content" 
+                          id="id_content"
+                          class="form-control" 
+                          rows="6"
+                          placeholder="Share your thoughts about this product..."
+                          maxlength="2000"
+                          required></textarea>
+            </div>
+
+            <!-- Photos -->
+            <div style="margin-bottom: 1.5rem;">
+                <label for="id_images" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                    Photos (Optional)
+                </label>
+                <input type="file" 
+                       name="images" 
+                       id="id_images"
+                       class="form-control" 
+                       accept="image/jpeg,image/png,image/webp"
+                       multiple>
+                <small class="text-muted">Max 5 images, 5MB each</small>
+            </div>
+
+            <!-- Buttons -->
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button type="button" 
+                        class="btn btn-secondary" 
+                        onclick="closeReviewModal()">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-dark">
+                    <i class="fas fa-paper-plane"></i> Submit Review
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Open modal
+function openReviewModal() {
+    document.getElementById('reviewFormModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+// Close modal
+function closeReviewModal() {
+    document.getElementById('reviewFormModal').style.display = 'none';
+    document.body.style.overflow = '';
+    document.getElementById('reviewForm').reset();
+    document.getElementById('rating-input').value = '';
+    document.querySelectorAll('.star-rating i').forEach(star => {
+        star.className = 'far fa-star';
+    });
+}
+
+// Close on outside click
+document.getElementById('reviewFormModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeReviewModal();
+    }
+});
+
+// Close on Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeReviewModal();
+    }
+});
+
+// Star rating system
+document.querySelectorAll('.star-rating i').forEach(star => {
+    star.addEventListener('click', function() {
+        const rating = this.getAttribute('data-rating');
+        document.getElementById('rating-input').value = rating;
+        
+        document.querySelectorAll('.star-rating i').forEach((s, index) => {
+            if (index < rating) {
+                s.className = 'fas fa-star';
+                s.style.color = '#ffc107';
+            } else {
+                s.className = 'far fa-star';
+                s.style.color = '#ddd';
+            }
+        });
+    });
+    
+    star.addEventListener('mouseenter', function() {
+        const rating = this.getAttribute('data-rating');
+        document.querySelectorAll('.star-rating i').forEach((s, index) => {
+            if (index < rating) {
+                s.style.color = '#ffc107';
+            }
+        });
+    });
+});
+
+document.querySelector('.star-rating').addEventListener('mouseleave', function() {
+    const currentRating = document.getElementById('rating-input').value;
+    document.querySelectorAll('.star-rating i').forEach((s, index) => {
+        if (index < currentRating) {
+            s.style.color = '#ffc107';
+        } else {
+            s.style.color = '#ddd';
+        }
+    });
+});
+</script>
