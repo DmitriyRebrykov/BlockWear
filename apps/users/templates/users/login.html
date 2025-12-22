@@ -1,0 +1,654 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Sign In - Vintage Lab{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Login Form Block */
+    .login-form {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        padding: 2rem 0;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #f8f9fa 100%);
+    }
+
+    /* Login Card Block */
+    .login-card {
+        background-color: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+        overflow: hidden;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* Login Sidebar Block */
+    .login-sidebar {
+        background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+        color: #ffffff;
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-sidebar::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="0.8" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+        opacity: 0.1;
+        animation: login-sidebar__animation 20s ease-in-out infinite;
+    }
+
+    @keyframes login-sidebar__animation {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(-20px, -20px) rotate(180deg); }
+    }
+
+    /* Login Sidebar Elements */
+    .login-sidebar__logo {
+        font-size: 3rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: -2px;
+        margin-bottom: 1rem;
+        z-index: 1;
+        position: relative;
+    }
+
+    .login-sidebar__tagline {
+        font-size: 1.2rem;
+        font-weight: 300;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+        z-index: 1;
+        position: relative;
+    }
+
+    .login-sidebar__features {
+        z-index: 1;
+        position: relative;
+    }
+
+    /* Feature Item Block */
+    .feature-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .feature-item__icon {
+        width: 20px;
+        margin-right: 1rem;
+        color: #ffffff;
+    }
+
+    /* Login Content Block */
+    .login-content {
+        padding: 3rem;
+    }
+
+    /* Form Header Block */
+    .form-header {
+        margin-bottom: 2rem;
+    }
+
+    .form-header__title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: -1px;
+        margin-bottom: 0.5rem;
+        color: #000000;
+    }
+
+    .form-header__subtitle {
+        color: #666666;
+        font-weight: 400;
+        margin-bottom: 0;
+    }
+
+    /* Social Auth Block */
+    .social-auth {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .social-auth__button {
+        flex: 1;
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        background-color: #ffffff;
+        color: #000000;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .social-auth__button:hover {
+        border-color: #000000;
+        color: #000000;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+
+    /* Form Divider Block */
+    .form-divider {
+        text-align: center;
+        margin: 1.5rem 0;
+        position: relative;
+    }
+
+    .form-divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-color: #e0e0e0;
+    }
+
+    .form-divider__text {
+        background-color: #ffffff;
+        padding: 0 1rem;
+        color: #666666;
+        font-weight: 500;
+        position: relative;
+    }
+
+    /* Login Form Block */
+    .login-form-block {
+        /* Container for form elements */
+    }
+
+    /* Form Field Block */
+    .form-field {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .form-field__input {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        background-color: #ffffff;
+        width: 100%;
+        font-size: 1rem;
+    }
+
+    .form-field__input:focus {
+        border-color: #000000;
+        box-shadow: 0 0 0 0.2rem rgba(0,0,0,0.1);
+        background-color: #ffffff;
+        outline: none;
+    }
+
+    .form-field__label {
+        color: #666666;
+        font-weight: 500;
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        transition: all 0.3s ease;
+        pointer-events: none;
+    }
+
+    .form-field__input:focus + .form-field__label,
+    .form-field__input:not(:placeholder-shown) + .form-field__label {
+        top: -0.5rem;
+        left: 0.5rem;
+        background-color: #ffffff;
+        padding: 0 0.5rem;
+        font-size: 0.875rem;
+        color: #000000;
+        font-weight: 600;
+    }
+
+    /* Password Field Block */
+    .password-field {
+        position: relative;
+    }
+
+    .password-field__toggle {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #666666;
+        cursor: pointer;
+        z-index: 10;
+        transition: all 0.3s ease;
+    }
+
+    .password-field__toggle:hover {
+        color: #000000;
+    }
+
+    /* Checkbox Field Block */
+    .checkbox-field {
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .checkbox-field__wrapper {
+        display: flex;
+        align-items: center;
+    }
+
+    .checkbox-field__input {
+        margin-right: 0.5rem;
+    }
+
+    .checkbox-field__input:checked {
+        background-color: #000000;
+        border-color: #000000;
+    }
+
+    .checkbox-field__label {
+        font-weight: 500;
+        color: #000000;
+        cursor: pointer;
+        margin-bottom: 0;
+    }
+
+    .checkbox-field__link {
+        color: #000000;
+        text-decoration: underline;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .checkbox-field__link:hover {
+        color: #666666;
+    }
+
+    /* Submit Button Block */
+    .submit-button {
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        padding: 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        width: 100%;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+    }
+
+    .submit-button:hover {
+        background-color: #1a1a1a;
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .submit-button:disabled {
+        background-color: #666666;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .submit-button__spinner {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #ffffff;
+        border-top: 2px solid transparent;
+        border-radius: 50%;
+        animation: submit-button__spinner-animation 1s linear infinite;
+        margin-right: 0.5rem;
+    }
+
+    @keyframes submit-button__spinner-animation {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Home Button Block */
+    .home-button {
+        background: none;
+        color: #000000;
+        border: 2px solid #000000;
+        padding: 12px 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        border-radius: 10px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .home-button:hover {
+        background-color: #000000;
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    .home-button__icon {
+        /* Icon styling if needed */
+    }
+
+    /* Register Link Block */
+    .register-link {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .register-link__text {
+        margin: 0;
+    }
+
+    .register-link__link {
+        color: #000000;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .register-link__link:hover {
+        color: #666666;
+        text-decoration: underline;
+    }
+
+    /* Form Error Block */
+    .form-error {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
+
+    /* Alert Block */
+    .alert {
+        border-radius: 10px;
+        border: none;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert--danger {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+    }
+
+    .alert--success {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+    }
+
+    .alert--info {
+        background-color: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+    }
+
+    /* Responsive Modifiers */
+    @media (max-width: 768px) {
+        .login-sidebar {
+            display: none;
+        }
+
+        .login-content {
+            padding: 2rem 1.5rem;
+        }
+
+        .form-header__title {
+            font-size: 2rem;
+        }
+
+        .login-form {
+            padding: 1rem 0;
+        }
+
+        .checkbox-field {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Login Form Container -->
+<div class="login-form">
+    <div class="container">
+        <div class="login-card">
+            <div class="row g-0">
+                <!-- Left Sidebar -->
+                <div class="col-lg-5 login-sidebar">
+                    <div class="login-sidebar__logo">Vintage Lab</div>
+                    <p class="login-sidebar__tagline">Welcome back to your vintage journey</p>
+
+                    <div class="login-sidebar__features">
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-item__icon"></i>
+                            <span>Access your wishlist and saved items</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-box feature-item__icon"></i>
+                            <span>Track your orders in real-time</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-star feature-item__icon"></i>
+                            <span>Get personalized recommendations</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-gift feature-item__icon"></i>
+                            <span>Exclusive member-only deals</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-headset feature-item__icon"></i>
+                            <span>Priority customer support</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Login Content -->
+                <div class="col-lg-7 login-content">
+                    <!-- Form Header -->
+                    <div class="form-header">
+                        <h2 class="form-header__title">Sign In</h2>
+                        <p class="form-header__subtitle">Welcome back! Please sign in to your account</p>
+                    </div>
+
+                    <!-- Django Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert--{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Social Login -->
+                    <div class="social-auth">
+                        <a href="#" class="social-auth__button">
+                            <i class="fab fa-google"></i>
+                            <span>Google</span>
+                        </a>
+                        <a href="#" class="social-auth__button">
+                            <i class="fab fa-facebook-f"></i>
+                            <span>Facebook</span>
+                        </a>
+                    </div>
+
+                    <div class="form-divider">
+                        <span class="form-divider__text">or sign in with email</span>
+                    </div>
+
+                    <!-- Login Form -->
+                    <form method="post" class="login-form-block" id="loginForm">
+                        {% csrf_token %}
+
+                        <div class="form-field">
+                            {{ form.username }}
+                            <label class="form-field__label" for="{{ form.username.id_for_label }}">Email or Username</label>
+                            {% if form.username.errors %}
+                                <div class="form-error">{{ form.username.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-field password-field">
+                            {{ form.password }}
+                            <label class="form-field__label" for="{{ form.password.id_for_label }}">Password</label>
+                            <button type="button" class="password-field__toggle" onclick="togglePassword('{{ form.password.id_for_label }}', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            {% if form.password.errors %}
+                                <div class="form-error">{{ form.password.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Remember Me & Forgot Password -->
+                        <div class="checkbox-field">
+                            <div class="checkbox-field__wrapper">
+                                <input class="form-check-input checkbox-field__input" type="checkbox" id="remember" name="remember">
+                                <label class="checkbox-field__label" for="remember">
+                                    Remember me
+                                </label>
+                            </div>
+                            <a href="#" class="checkbox-field__link">Forgot password?</a>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="submit-button" id="submitBtn">
+                            <span class="submit-button__spinner" id="loadingSpinner"></span>
+                            <span id="submitText">Sign In</span>
+                        </button>
+
+                        <!-- Back to Home -->
+                        <div class="text-center">
+                            <a href="{% url 'main:home' %}" class="home-button">
+                                <i class="fas fa-home home-button__icon"></i>
+                                <span>Back to Home</span>
+                            </a>
+                        </div>
+                    </form>
+
+                    <!-- Register Link -->
+                    <div class="register-link">
+                        <p class="register-link__text">Don't have an account? <a href="{% url 'users:register' %}" class="register-link__link">Sign Up</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Password toggle functionality
+    function togglePassword(fieldId, button) {
+        const field = document.getElementById(fieldId);
+        const icon = button.querySelector('i');
+
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            field.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    // Form submission with loading state
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const submitBtn = document.getElementById('submitBtn');
+        const submitText = document.getElementById('submitText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        // Show loading state
+        submitBtn.disabled = true;
+        loadingSpinner.style.display = 'inline-block';
+        submitText.textContent = 'Signing In...';
+    });
+
+    // Auto-focus first input
+    const firstInput = document.getElementById('{{ form.username.id_for_label }}');
+    if (firstInput) {
+        firstInput.focus();
+    }
+
+    // Form field animations
+    const formInputs = document.querySelectorAll('.form-field__input');
+    formInputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'translateY(-2px)';
+        });
+
+        input.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Email/Username validation visual feedback
+    const usernameField = document.getElementById('{{ form.username.id_for_label }}');
+    if (usernameField) {
+        usernameField.addEventListener('input', function() {
+            if (this.value.length > 0) {
+                this.style.borderColor = '#28a745';
+            } else {
+                this.style.borderColor = '#e0e0e0';
+            }
+        });
+    }
+
+    // Password validation visual feedback
+    const passwordField = document.getElementById('{{ form.password.id_for_label }}');
+    if (passwordField) {
+        passwordField.addEventListener('input', function() {
+            if (this.value.length >= 6) {
+                this.style.borderColor = '#28a745';
+            } else if (this.value.length > 0) {
+                this.style.borderColor = '#fd7e14';
+            } else {
+                this.style.borderColor = '#e0e0e0';
+            }
+        });
+    }
+
+    // Handle Enter key in form fields
+    document.querySelectorAll('.form-field__input').forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('loginForm').submit();
+            }
+        });
+    });
+</script>
+{% endblock %}
