@@ -18,19 +18,7 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-4. Выполните миграции БД:
-   
-```bash
-python manage.py migrate
-```
-
-5. Создайте суперпользователя (админ-панель):
-   
-```bash
-python manage.py createsuperuser
-```
-
-6.Создать .env
+4.Создать .env
 
 ```bash
 SECRET_KEY=...
@@ -45,7 +33,34 @@ STRIPE_SECRET_KEY=...
 STRIPE_WEBHOOK_SECRET=...
 ```
 
-7. Запустите сервер разработки:
+5. Выполните миграции БД:
+   
+```bash
+python manage.py migrate
+```
+
+6. Создайте суперпользователя (админ-панель):
+   
+```bash
+python manage.py createsuperuser
+```
+
+7.Создать .env
+
+```bash
+SECRET_KEY=...
+POSTGRES_DB=blockwear_db
+POSTGRES_USER=...
+POSTGRES_PASSWORD=...
+POSTGRES_HOST=localhost
+POSTGRES_PORT=...
+
+STRIPE_PUBLIC_KEY=...
+STRIPE_SECRET_KEY=...
+STRIPE_WEBHOOK_SECRET=...
+```
+
+8. Запустите сервер разработки:
 ```bash
 python manage.py runserver
 ```
