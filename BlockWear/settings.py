@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'apps.main',
     'apps.cart',
     'apps.users',
+    'apps.payments',
     'django_filters',
 ]
 
@@ -128,3 +129,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CART_SESSION_ID = 'cart'
 
 AUTH_USER_MODEL = 'users.CustomUser'
+
+# Stripe Configuration
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
+
+# Currency
+STRIPE_CURRENCY = 'usd'
+
+# CSRF для webhook
+CSRF_TRUSTED_ORIGINS = ['https://your-domain.com']  # Для продакшена

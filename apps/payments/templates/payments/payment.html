@@ -1,0 +1,489 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+:root {
+    --primary-black: #000000;
+    --primary-white: #ffffff;
+    --light-gray: #f8f9fa;
+    --medium-gray: #666666;
+    --border-gray: #e0e0e0;
+    --success-green: #28a745;
+    --danger-red: #dc3545;
+}
+
+.payment-section {
+    padding: 3rem 0;
+    background: linear-gradient(135deg, var(--light-gray) 0%, var(--primary-white) 100%);
+    min-height: calc(100vh - 200px);
+}
+
+.payment-header {
+    background: linear-gradient(135deg, var(--primary-black) 0%, #1a1a1a 100%);
+    padding: 80px 0 40px;
+    color: var(--primary-white);
+    margin-bottom: 3rem;
+}
+
+.payment-title {
+    font-size: 3rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -2px;
+    margin-bottom: 0.5rem;
+}
+
+.checkout-steps {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    opacity: 0.6;
+}
+
+.step.active {
+    opacity: 1;
+}
+
+.step-number {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.step.active .step-number {
+    background-color: var(--primary-white);
+    color: var(--primary-black);
+}
+
+.payment-container {
+    background-color: var(--primary-white);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    padding: 2rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-gray);
+}
+
+.info-card {
+    background-color: var(--light-gray);
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+.info-label {
+    font-weight: 600;
+    color: var(--medium-gray);
+}
+
+.info-value {
+    font-weight: 500;
+    color: var(--primary-black);
+}
+
+#card-element {
+    padding: 1rem;
+    border: 2px solid var(--border-gray);
+    border-radius: 10px;
+    background-color: var(--primary-white);
+    transition: all 0.3s ease;
+}
+
+#card-element.StripeElement--focus {
+    border-color: var(--primary-black);
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+}
+
+#card-element.StripeElement--invalid {
+    border-color: var(--danger-red);
+}
+
+#card-errors {
+    color: var(--danger-red);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    min-height: 20px;
+}
+
+.btn-pay {
+    background-color: var(--primary-black);
+    color: var(--primary-white);
+    border: none;
+    padding: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 10px;
+    width: 100%;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin-top: 1.5rem;
+}
+
+.btn-pay:hover:not(:disabled) {
+    background-color: #1a1a1a;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.btn-pay:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--primary-white);
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.security-badges {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-gray);
+}
+
+.security-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--medium-gray);
+    font-size: 0.85rem;
+}
+
+.order-summary {
+    background-color: var(--light-gray);
+    padding: 2rem;
+    border-radius: 15px;
+    position: sticky;
+    top: 100px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+.summary-row.total {
+    font-size: 1.2rem;
+    font-weight: 700;
+    border-top: 2px solid var(--primary-black);
+    margin-top: 1rem;
+    padding-top: 1rem;
+}
+
+.btn-back {
+    background: none;
+    color: var(--primary-black);
+    border: 2px solid var(--primary-black);
+    padding: 12px 30px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 10px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+    background-color: var(--primary-black);
+    color: var(--primary-white);
+    text-decoration: none;
+}
+
+@media (max-width: 991px) {
+    .payment-title {
+        font-size: 2rem;
+    }
+
+    .order-summary {
+        position: static;
+        margin-top: 2rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Payment Header -->
+<div class="payment-header">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="payment-title">Payment</h1>
+            <div class="checkout-steps">
+                <div class="step">
+                    <div class="step-number">✓</div>
+                    <span>Information</span>
+                </div>
+                <div class="step active">
+                    <div class="step-number">2</div>
+                    <span>Payment</span>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <span>Confirmation</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Section -->
+<section class="payment-section">
+    <div class="container">
+        <div class="row">
+            <!-- Payment Form -->
+            <div class="col-lg-7">
+                <div class="payment-container">
+                    <!-- Shipping Information Review -->
+                    <h2 class="section-title">Shipping Information</h2>
+                    <div class="info-card">
+                        <div class="info-row">
+                            <span class="info-label">Name:</span>
+                            <span class="info-value">{{ checkout_data.first_name }} {{ checkout_data.last_name }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value">{{ checkout_data.email }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Phone:</span>
+                            <span class="info-value">{{ checkout_data.phone }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Address:</span>
+                            <span class="info-value">
+                                {{ checkout_data.address_line1 }}{% if checkout_data.address_line2 %}, {{ checkout_data.address_line2 }}{% endif %}<br>
+                                {{ checkout_data.city }}, {{ checkout_data.postal_code }}<br>
+                                {{ checkout_data.country }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <h2 class="section-title">Payment Method</h2>
+
+                    <form id="payment-form">
+                        {% csrf_token %}
+
+                        <div id="card-element"></div>
+                        <div id="card-errors" role="alert"></div>
+
+                        <button id="submit-button" class="btn-pay" type="submit">
+                            <span class="spinner" id="spinner"></span>
+                            <span id="button-text">Pay ${{ order_amounts.total }}</span>
+                        </button>
+
+                        <a href="{% url 'payments:checkout' %}" class="btn-back" style="margin-top: 1rem; width: 100%; text-align: center; display: block;">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Information
+                        </a>
+
+                        <div class="security-badges">
+                            <div class="security-badge">
+                                <i class="fas fa-lock"></i>
+                                <span>Secure Payment</span>
+                            </div>
+                            <div class="security-badge">
+                                <i class="fab fa-cc-stripe"></i>
+                                <span>Powered by Stripe</span>
+                            </div>
+                            <div class="security-badge">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>SSL Encrypted</span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-5">
+                <div class="order-summary">
+                    <h2 class="section-title">Order Summary</h2>
+
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>${{ order_amounts.subtotal }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping:</span>
+                        <span>
+                            {% if order_amounts.shipping == "0.00" %}
+                                Free
+                            {% else %}
+                                ${{ order_amounts.shipping }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax:</span>
+                        <span>${{ order_amounts.tax }}</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span>${{ order_amounts.total }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+const stripe = Stripe('{{ stripe_public_key }}');
+const elements = stripe.elements();
+
+// Custom styling
+const style = {
+    base: {
+        fontSize: '16px',
+        color: '#000000',
+        fontFamily: '"Montserrat", sans-serif',
+        '::placeholder': {
+            color: '#666666',
+        },
+    },
+    invalid: {
+        color: '#dc3545',
+        iconColor: '#dc3545',
+    },
+};
+
+const cardElement = elements.create('card', {style: style});
+cardElement.mount('#card-element');
+
+// Handle real-time validation errors
+cardElement.on('change', function(event) {
+    const displayError = document.getElementById('card-errors');
+    if (event.error) {
+        displayError.textContent = event.error.message;
+    } else {
+        displayError.textContent = '';
+    }
+});
+
+// Handle form submission
+const form = document.getElementById('payment-form');
+const submitButton = document.getElementById('submit-button');
+const spinner = document.getElementById('spinner');
+const buttonText = document.getElementById('button-text');
+
+form.addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    // Disable button and show spinner
+    submitButton.disabled = true;
+    spinner.style.display = 'inline-block';
+    buttonText.textContent = 'Processing...';
+
+    try {
+        const {error, paymentIntent} = await stripe.confirmCardPayment(
+            '{{ client_secret }}',
+            {
+                payment_method: {
+                    card: cardElement,
+                    billing_details: {
+                        name: '{{ checkout_data.first_name }} {{ checkout_data.last_name }}',
+                        email: '{{ checkout_data.email }}',
+                        phone: '{{ checkout_data.phone }}',
+                        address: {
+                            line1: '{{ checkout_data.address_line1 }}',
+                            line2: '{{ checkout_data.address_line2 }}',
+                            city: '{{ checkout_data.city }}',
+                            postal_code: '{{ checkout_data.postal_code }}',
+                            country: 'US', // You might want to make this dynamic
+                        }
+                    }
+                }
+            }
+        );
+
+        if (error) {
+            // Show error to customer
+            const errorElement = document.getElementById('card-errors');
+            errorElement.textContent = error.message;
+
+            // Re-enable button
+            submitButton.disabled = false;
+            spinner.style.display = 'none';
+            buttonText.textContent = 'Pay ${{ order_amounts.total }}';
+        } else {
+            // Payment succeeded
+            if (paymentIntent.status === 'succeeded') {
+                // Submit form to create order
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                const response = await fetch('{% url "payments:payment_success" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (response.ok) {
+                    window.location.href = response.url;
+                } else {
+                    throw new Error('Failed to create order');
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Payment error:', e);
+        const errorElement = document.getElementById('card-errors');
+        errorElement.textContent = 'An unexpected error occurred. Please try again.';
+
+        submitButton.disabled = false;
+        spinner.style.display = 'none';
+        buttonText.textContent = 'Pay ${{ order_amounts.total }}';
+    }
+});
+</script>
+{% endblock %}
