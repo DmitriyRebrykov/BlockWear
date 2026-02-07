@@ -18,13 +18,19 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-4. Создайте суперпользователя (админ-панель):
+4. Выполните миграции БД:
+   
+```bash
+python manage.py migrate
+```
+
+5. Создайте суперпользователя (админ-панель):
    
 ```bash
 python manage.py createsuperuser
 ```
 
-5.Создать .env
+6.Создать .env
 
 ```bash
 SECRET_KEY=...
@@ -39,7 +45,7 @@ STRIPE_SECRET_KEY=...
 STRIPE_WEBHOOK_SECRET=...
 ```
 
-6. Запустите сервер разработки:
+7. Запустите сервер разработки:
 ```bash
 python manage.py runserver
 ```
